@@ -1,6 +1,7 @@
 /**
  * API Route: /api/inquiry
- * Handles inquiry form submissions
+ * Handles project inquiry form submissions
+ * Estimates scope and pricing for web design, apps, software, and custom projects
  */
 
 export async function POST(request) {
@@ -17,6 +18,7 @@ export async function POST(request) {
     console.log('New inquiry received:', {
       inquiryId,
       projectName: formData.projectName,
+      projectType: formData.projectType,
       email: formData.email,
       estimate,
       timestamp: new Date().toISOString(),
@@ -46,6 +48,7 @@ export async function POST(request) {
 
 /**
  * Estimate project scope based on form responses
+ * Works for: websites, web apps, mobile apps, integrations, redesigns, MVPs
  */
 function estimateProjectScope(data) {
   let estimatedHours = 20; // baseline
@@ -53,29 +56,49 @@ function estimateProjectScope(data) {
   let complexity = 'simple';
   let hourlyRate = 125; // default rate
 
-  // Token volume impact
-  if (data.tokenVolume === '1m-10m') estimatedHours += 15;
-  if (data.tokenVolume === '10m-100m') estimatedHours += 30;
-  if (data.tokenVolume === 'over-100m') estimatedHours += 50;
+  // Project type baseline
+  if (data.projectType === 'website') estimatedHours = 20;
+  if (data.projectType === 'web-app') estimatedHours = 60;
+  if (data.projectType === 'mobile-app') estimatedHours = 100;
+  if (data.projectType === 'mvp') estimatedHours = 40;
+  if (data.projectType === 'redesign') estimatedHours = 30;
+  if (data.projectType === 'integration') estimatedHours = 20;
 
-  // Document processing impact
-  if (data.documentsPerMonth === '100-1k') estimatedHours += 10;
-  if (data.documentsPerMonth === '1k-10k') estimatedHours += 20;
-  if (data.documentsPerMonth === 'over-10k') estimatedHours += 40;
-
-  // Webhooks/integrations complexity
-  if (data.webhooksNeeded === 'moderate') estimatedHours += 15;
-  if (data.webhooksNeeded === 'complex') {
+  // Design scope impact
+  if (data.designScope === 'moderate') estimatedHours += 15;
+  if (data.designScope === 'custom') {
     estimatedHours += 40;
+    complexity = 'moderate';
+  }
+
+  // Database/backend impact
+  if (data.databaseNeeded === 'simple') estimatedHours += 10;
+  if (data.databaseNeeded === 'complex') {
+    estimatedHours += 30;
     complexity = 'complex';
   }
+
+  // Integration complexity
+  if (data.integrationCount === '1-2') estimatedHours += 5;
+  if (data.integrationCount === '3-5') estimatedHours += 15;
+  if (data.integrationCount === '5-plus') {
+    estimatedHours += 30;
+    complexity = 'complex';
+  }
+
+  // Mobile platforms
+  const platforms = data.deploymentRequirements || [];
+  if (platforms.includes('ios')) estimatedHours += 30;
+  if (platforms.includes('android')) estimatedHours += 30;
 
   // Team level adjustment
   if (data.teamLevel === 'non-tech') estimatedHours += 10;
 
   // Special requirements
-  if (data.specialRequirements?.includes('compliance')) estimatedHours += 30;
-  if (data.specialRequirements?.includes('high-availability')) estimatedHours += 20;
+  if (data.specialRequirements?.includes('compliance')) estimatedHours += 20;
+  if (data.specialRequirements?.includes('performance')) estimatedHours += 15;
+  if (data.specialRequirements?.includes('seo')) estimatedHours += 10;
+  if (data.specialRequirements?.includes('training')) estimatedHours += 15;
 
   // Determine tier based on total hours
   if (estimatedHours > 60 && estimatedHours <= 100) {
@@ -87,7 +110,7 @@ function estimateProjectScope(data) {
   }
 
   // Cap at reasonable values
-  if (estimatedHours > 200) estimatedHours = 200;
+  if (estimatedHours > 250) estimatedHours = 250;
 
   // Check partner qualification for discount
   const isPartnerQualified = data.partnerQualification && data.partnerQualification !== 'none';

@@ -1,14 +1,12 @@
 /**
- * c3bai Inquiry Form Component
+ * Cod3Black Agency Project Inquiry Form
  * 
- * Purpose: Collect structured project information for fair pricing
- * Integration: Add to /pages/consultation page or /pages/inquiry
- * 
+ * Purpose: Collect structured project information for fair, transparent pricing
  * Features:
- * - Multi-section form that guides users through scope estimation
- * - Automatic response email with rough estimate
- * - Data saved to database for manual review
- * - Mobile-responsive
+ * - Multi-section form for custom web design, apps, and software projects
+ * - Works for non-technical founders and experienced teams
+ * - Automatic scope estimation and rough pricing
+ * - Mobile-responsive and PWA-ready
  * - 10-minute completion time
  */
 
@@ -26,15 +24,14 @@ const InquiryForm = () => {
     projectName: '',
     description: '',
     problemStatement: '',
+    projectType: '', // web design, app, software, integration, mvp, redesign
     
     // Section 2: Scope Estimation
-    tokenVolume: '',
-    llmProviders: [],
-    documentsPerMonth: '',
-    documentTypes: [],
-    webhooksNeeded: '',
-    integrationType: '',
-    integratedSystems: [],
+    designScope: '', // simple, moderate, complex
+    integrationCount: '', // how many third-party integrations
+    databaseNeeded: '', // yes/no
+    integrationTypes: [], // Stripe, Slack, etc
+    deploymentRequirements: [], // mobile, web, both
     
     // Section 3: Timeline & Budget
     timeline: '',
@@ -43,7 +40,7 @@ const InquiryForm = () => {
     // Section 4: Team & Complexity
     techStack: '',
     existingCode: '',
-    teamLevel: '',
+    teamLevel: '', // non-tech, mixed, strong-dev, enterprise
     specialRequirements: [],
     
     // Section 5: Contact
@@ -54,7 +51,7 @@ const InquiryForm = () => {
     contactMethod: '',
     additionalInfo: '',
     
-    // Section 6: Partner Qualification (optional discount tier)
+    // Section 6: Partner Qualification
     partnerQualification: '',
     partnerDetails: '',
   });
@@ -85,7 +82,6 @@ const InquiryForm = () => {
     setLoading(true);
 
     try {
-      // Call your API to save inquiry and send email
       const response = await fetch('/api/inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -145,7 +141,7 @@ const InquiryForm = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Project Inquiry</h1>
         <p className="text-gray-600 mb-4">
-          Help us understand your scope so we can give you an accurate estimate.
+          Help us understand your project so we can give you an accurate estimate.
           This takes about 10 minutes.
         </p>
         
@@ -166,19 +162,19 @@ const InquiryForm = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* SECTION 1: Basics */}
+        {/* SECTION 1: Project Basics */}
         {section === 1 && (
           <div className="space-y-6 animate-fadeIn">
             <div>
               <label className="block text-sm font-semibold mb-2">
-                Project Name
+                What's your project called?
               </label>
               <input
                 type="text"
                 name="projectName"
                 value={formData.projectName}
                 onChange={handleInputChange}
-                placeholder="e.g., AI-Powered Document Processor"
+                placeholder="e.g., Booking Platform, Mobile App, SaaS Dashboard"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                 required
               />
@@ -186,13 +182,41 @@ const InquiryForm = () => {
 
             <div>
               <label className="block text-sm font-semibold mb-2">
-                Brief Description
+                What type of project is this?
+              </label>
+              <div className="space-y-2">
+                {[
+                  { value: 'website', label: 'Website (marketing, portfolio, content)' },
+                  { value: 'web-app', label: 'Web App (dashboard, SaaS, tool)' },
+                  { value: 'mobile-app', label: 'Mobile App (iOS/Android)' },
+                  { value: 'integration', label: 'Integration (connecting systems)' },
+                  { value: 'redesign', label: 'Redesign (existing site/app)' },
+                  { value: 'mvp', label: 'MVP (proof of concept)' },
+                  { value: 'other', label: 'Something else' }
+                ].map(option => (
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <input
+                      type="radio"
+                      name="projectType"
+                      value={option.value}
+                      checked={formData.projectType === option.value}
+                      onChange={handleInputChange}
+                    />
+                    <span className="text-gray-700">{option.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2">
+                Describe your project briefly
               </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="What does your product do? (2-3 sentences)"
+                placeholder="What does it do? Who uses it? (2-3 sentences)"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg h-24"
                 required
               />
@@ -207,47 +231,43 @@ const InquiryForm = () => {
                 name="problemStatement"
                 value={formData.problemStatement}
                 onChange={handleInputChange}
-                placeholder="One sentence problem statement"
+                placeholder="What pain point does this solve?"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                 required
               />
               <p className="text-xs text-gray-600 mt-1">
-                Example: "Founders waste 4 hours/week manually extracting data from emails"
+                Example: "Founders waste 4 hours/week managing invoices manually"
               </p>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-gray-700">
-                <strong>Tip:</strong> Clear problem statements lead to better estimates. 
-                The more detail here, the more accurate our pricing.
+                <strong>Tip:</strong> Clear problem statements lead to better estimates. The more detail, the more accurate our pricing.
               </p>
             </div>
           </div>
         )}
 
-        {/* SECTION 2: Scope Estimation */}
+        {/* SECTION 2: Scope & Features */}
         {section === 2 && (
           <div className="space-y-6 animate-fadeIn">
-            {/* Token Volume */}
             <div>
               <label className="block text-sm font-semibold mb-3">
-                Estimated LLM token volume per month
+                How much design work is needed?
               </label>
               <div className="space-y-2">
                 {[
-                  { value: 'under-100k', label: '<100K tokens (testing/MVP)' },
-                  { value: '100k-1m', label: '100K-1M tokens (light use)' },
-                  { value: '1m-10m', label: '1M-10M tokens (moderate)' },
-                  { value: '10m-100m', label: '10M-100M tokens (heavy)' },
-                  { value: 'over-100m', label: '100M+ tokens (massive scale)' },
+                  { value: 'template', label: 'Use template/existing design (minimal design)' },
+                  { value: 'moderate', label: 'Moderate design (customized layouts, colors, fonts)' },
+                  { value: 'custom', label: 'Custom design (unique UI, brand identity)' },
                   { value: 'unsure', label: "Not sure yet" }
                 ].map(option => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
-                      name="tokenVolume"
+                      name="designScope"
                       value={option.value}
-                      checked={formData.tokenVolume === option.value}
+                      checked={formData.designScope === option.value}
                       onChange={handleInputChange}
                     />
                     <span className="text-gray-700">{option.label}</span>
@@ -256,26 +276,74 @@ const InquiryForm = () => {
               </div>
             </div>
 
-            {/* LLM Providers */}
             <div>
               <label className="block text-sm font-semibold mb-3">
-                Which LLM providers? (select all that apply)
+                Will this need a database or backend?
               </label>
               <div className="space-y-2">
                 {[
-                  { value: 'openai', label: 'OpenAI (GPT-4, GPT-3.5)' },
-                  { value: 'anthropic', label: 'Anthropic (Claude)' },
-                  { value: 'google', label: 'Google (Gemini)' },
-                  { value: 'local', label: 'Local model (self-hosted)' },
-                  { value: 'multi', label: 'Multiple providers' },
+                  { value: 'no', label: 'No (static site, marketing page)' },
+                  { value: 'simple', label: 'Simple (basic storage, forms)' },
+                  { value: 'complex', label: 'Complex (user accounts, real-time data, analytics)' },
                   { value: 'unsure', label: "Not sure yet" }
+                ].map(option => (
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <input
+                      type="radio"
+                      name="databaseNeeded"
+                      value={option.value}
+                      checked={formData.databaseNeeded === option.value}
+                      onChange={handleInputChange}
+                    />
+                    <span className="text-gray-700">{option.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-3">
+                How many third-party integrations? (Stripe, Slack, APIs, etc)
+              </label>
+              <div className="space-y-2">
+                {[
+                  { value: 'none', label: 'None (standalone project)' },
+                  { value: '1-2', label: '1-2 integrations' },
+                  { value: '3-5', label: '3-5 integrations' },
+                  { value: '5-plus', label: '5+ integrations' },
+                  { value: 'unsure', label: "Not sure yet" }
+                ].map(option => (
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <input
+                      type="radio"
+                      name="integrationCount"
+                      value={option.value}
+                      checked={formData.integrationCount === option.value}
+                      onChange={handleInputChange}
+                    />
+                    <span className="text-gray-700">{option.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-3">
+                Which platforms do you need?
+              </label>
+              <div className="space-y-2">
+                {[
+                  { value: 'web', label: 'Web (desktop & mobile browsers)' },
+                  { value: 'ios', label: 'iOS app' },
+                  { value: 'android', label: 'Android app' },
+                  { value: 'both-mobile', label: 'Both iOS & Android' }
                 ].map(option => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="checkbox"
                       value={option.value}
-                      checked={formData.llmProviders.includes(option.value)}
-                      onChange={(e) => handleCheckboxChange(e, 'llmProviders')}
+                      checked={formData.deploymentRequirements.includes(option.value)}
+                      onChange={(e) => handleCheckboxChange(e, 'deploymentRequirements')}
                     />
                     <span className="text-gray-700">{option.label}</span>
                   </label>
@@ -283,112 +351,30 @@ const InquiryForm = () => {
               </div>
             </div>
 
-            {/* Data Processing */}
             <div>
               <label className="block text-sm font-semibold mb-3">
-                Documents to process per month
+                Any special requirements?
               </label>
               <div className="space-y-2">
                 {[
-                  { value: 'none', label: 'None' },
-                  { value: 'under-100', label: '<100 documents' },
-                  { value: '100-1k', label: '100-1K documents' },
-                  { value: '1k-10k', label: '1K-10K documents' },
-                  { value: 'over-10k', label: '10K+ documents' }
+                  { value: 'compliance', label: 'Compliance/Security (HIPAA, GDPR, PCI)' },
+                  { value: 'performance', label: 'Performance (fast load times, high traffic)' },
+                  { value: 'seo', label: 'SEO optimization' },
+                  { value: 'training', label: 'Training/Documentation' },
+                  { value: 'none', label: 'None listed' }
                 ].map(option => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
-                      type="radio"
-                      name="documentsPerMonth"
+                      type="checkbox"
                       value={option.value}
-                      checked={formData.documentsPerMonth === option.value}
-                      onChange={handleInputChange}
+                      checked={formData.specialRequirements.includes(option.value)}
+                      onChange={(e) => handleCheckboxChange(e, 'specialRequirements')}
                     />
                     <span className="text-gray-700">{option.label}</span>
                   </label>
                 ))}
               </div>
             </div>
-
-            {/* Document Types */}
-            {formData.documentsPerMonth !== 'none' && (
-              <div>
-                <label className="block text-sm font-semibold mb-3">
-                  What types of documents?
-                </label>
-                <div className="space-y-2">
-                  {[
-                    { value: 'pdf-scanned', label: 'PDFs (scanned images)' },
-                    { value: 'pdf-searchable', label: 'PDFs (searchable text)' },
-                    { value: 'images', label: 'Images' },
-                    { value: 'web', label: 'Web pages' },
-                    { value: 'database', label: 'Database exports' },
-                    { value: 'other', label: 'Other' }
-                  ].map(option => (
-                    <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        value={option.value}
-                        checked={formData.documentTypes.includes(option.value)}
-                        onChange={(e) => handleCheckboxChange(e, 'documentTypes')}
-                      />
-                      <span className="text-gray-700">{option.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Integrations */}
-            <div>
-              <label className="block text-sm font-semibold mb-3">
-                Need webhooks or API integrations?
-              </label>
-              <div className="space-y-2">
-                {[
-                  { value: 'none', label: 'No integrations' },
-                  { value: 'simple', label: 'Simple (1-3 integrations)' },
-                  { value: 'moderate', label: 'Moderate (3-10)' },
-                  { value: 'complex', label: 'Complex (10+)' }
-                ].map(option => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                    <input
-                      type="radio"
-                      name="webhooksNeeded"
-                      value={option.value}
-                      checked={formData.webhooksNeeded === option.value}
-                      onChange={handleInputChange}
-                    />
-                    <span className="text-gray-700">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Integrated Systems */}
-            {formData.webhooksNeeded !== 'none' && (
-              <div>
-                <label className="block text-sm font-semibold mb-3">
-                  Which systems?
-                </label>
-                <div className="space-y-2">
-                  {[
-                    'Slack', 'Zapier', 'Make', 'Custom API', 
-                    'Database', 'Email', 'Payment processor', 'Other'
-                  ].map(system => (
-                    <label key={system} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        value={system}
-                        checked={formData.integratedSystems.includes(system)}
-                        onChange={(e) => handleCheckboxChange(e, 'integratedSystems')}
-                      />
-                      <span className="text-gray-700">{system}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -397,14 +383,15 @@ const InquiryForm = () => {
           <div className="space-y-6 animate-fadeIn">
             <div>
               <label className="block text-sm font-semibold mb-3">
-                When do you need this built?
+                When do you need this?
               </label>
               <div className="space-y-2">
                 {[
-                  { value: 'asap', label: 'ASAP (2-4 weeks)' },
-                  { value: 'soon', label: 'Soon (1-2 months)' },
-                  { value: 'flexible', label: 'Flexible (3+ months)' },
-                  { value: 'exploring', label: 'Just exploring' }
+                  { value: 'flexible', label: 'Flexible (no rush)' },
+                  { value: '3-months', label: '3 months' },
+                  { value: '6-weeks', label: '6 weeks' },
+                  { value: '4-weeks', label: '4 weeks' },
+                  { value: 'urgent', label: 'ASAP (2-3 weeks)' }
                 ].map(option => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
@@ -422,15 +409,15 @@ const InquiryForm = () => {
 
             <div>
               <label className="block text-sm font-semibold mb-3">
-                Budget expectation
+                What's your budget expectation?
               </label>
               <div className="space-y-2">
                 {[
-                  { value: 'under-5k', label: 'Under $5K' },
-                  { value: '5-10k', label: '$5K-$10K' },
-                  { value: '10-25k', label: '$10K-$25K' },
-                  { value: 'over-25k', label: '$25K+' },
-                  { value: 'unsure', label: "No idea yet" }
+                  { value: 'under-5k', label: 'Under $5,000' },
+                  { value: '5k-15k', label: '$5,000 - $15,000' },
+                  { value: '15k-50k', label: '$15,000 - $50,000' },
+                  { value: '50k-plus', label: '$50,000+' },
+                  { value: 'unsure', label: "Not sure yet" }
                 ].map(option => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
@@ -446,39 +433,27 @@ const InquiryForm = () => {
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-gray-700">
-                <strong>Note on budgeting:</strong> Our estimate will be based on actual scope. 
-                If your timeline or budget doesn't align, we'll explain trade-offs (features vs. timeline vs. budget).
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <p className="text-sm text-amber-900">
+                <strong>Our approach:</strong> We charge $125/hour or $65/hour for partners. A small website might be 20-40 hours. A custom app could be 100-200+ hours. We'll estimate based on your scope.
               </p>
             </div>
           </div>
         )}
 
-        {/* SECTION 4: Team & Complexity */}
+        {/* SECTION 4: Team & Technical */}
         {section === 4 && (
           <div className="space-y-6 animate-fadeIn">
             <div>
-              <label className="block text-sm font-semibold mb-2">
-                What's your tech stack?
-              </label>
-              <textarea
-                name="techStack"
-                value={formData.techStack}
-                onChange={handleInputChange}
-                placeholder="e.g., Next.js, React, Python, PostgreSQL, Supabase..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg h-20"
-              />
-            </div>
-
-            <div>
               <label className="block text-sm font-semibold mb-3">
-                Do you have existing code?
+                Do you have existing code or a live site?
               </label>
               <div className="space-y-2">
                 {[
-                  { value: 'yes', label: 'Yes (please share link/access)' },
-                  { value: 'no', label: 'No, starting fresh' }
+                  { value: 'none', label: 'Starting from scratch' },
+                  { value: 'partial', label: 'Have some code/prototype' },
+                  { value: 'existing', label: 'Have a live site/app to improve' },
+                  { value: 'legacy', label: 'Have legacy code to maintain' }
                 ].map(option => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
@@ -500,10 +475,10 @@ const InquiryForm = () => {
               </label>
               <div className="space-y-2">
                 {[
-                  { value: 'non-tech', label: 'Non-technical founder' },
-                  { value: 'mixed', label: 'Designer/PM with technical cofounders' },
-                  { value: 'strong-dev', label: 'Strong dev team (just need help)' },
-                  { value: 'enterprise', label: 'Enterprise with dedicated engineers' }
+                  { value: 'non-tech', label: 'Non-technical founder (need full support)' },
+                  { value: 'mixed', label: 'Mixed team (designer + developer)' },
+                  { value: 'strong-dev', label: 'Strong dev team (need help on specific parts)' },
+                  { value: 'enterprise', label: 'Enterprise team' }
                 ].map(option => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
@@ -520,27 +495,17 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                Special requirements?
+              <label className="block text-sm font-semibold mb-2">
+                What tech stack do you prefer? (optional)
               </label>
-              <div className="space-y-2">
-                {[
-                  { value: 'compliance', label: 'Compliance (HIPAA, GDPR, SOC2)' },
-                  { value: 'high-availability', label: 'High availability (99.9%+ uptime)' },
-                  { value: 'training', label: 'Custom training/documentation' },
-                  { value: 'none', label: 'None listed' }
-                ].map(option => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                    <input
-                      type="checkbox"
-                      value={option.value}
-                      checked={formData.specialRequirements.includes(option.value)}
-                      onChange={(e) => handleCheckboxChange(e, 'specialRequirements')}
-                    />
-                    <span className="text-gray-700">{option.label}</span>
-                  </label>
-                ))}
-              </div>
+              <input
+                type="text"
+                name="techStack"
+                value={formData.techStack}
+                onChange={handleInputChange}
+                placeholder="e.g., React, Node.js, Python, or leave blank if no preference"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+              />
             </div>
           </div>
         )}
@@ -633,7 +598,7 @@ const InquiryForm = () => {
                 name="additionalInfo"
                 value={formData.additionalInfo}
                 onChange={handleInputChange}
-                placeholder="Paste project links, add requirements, share your vision..."
+                placeholder="Share project links, add requirements, describe your vision..."
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg h-24"
               />
             </div>
