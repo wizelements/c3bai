@@ -90,7 +90,7 @@ export default function Home() {
           
           <div className="relative max-w-5xl mx-auto text-center">
             <div className="inline-block mb-6 px-4 py-2 bg-blue-500 bg-opacity-30 border border-blue-300 rounded-full text-sm font-semibold">
-              ✨ Production-Grade Software
+              ✨ Production-Grade Software [BUILD 60bd1c9]
             </div>
             
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
