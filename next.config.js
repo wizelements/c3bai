@@ -6,12 +6,23 @@ const nextConfig = {
   // Headers for PWA and security
   async headers() {
     return [
+      // Home page - shorter cache
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=60, must-revalidate'
+          }
+        ]
+      },
+      // All other pages
       {
         source: '/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=3600, must-revalidate'
+            value: 'public, max-age=300, must-revalidate'
           },
           {
             key: 'X-Content-Type-Options',
