@@ -1,47 +1,61 @@
 /**
  * Service Worker for Cod3Black Agency PWA
- * Provides offline support and caching strategy
+ * Provides offline support, caching, and instant loading
  */
 
-const CACHE_NAME = 'c3bai-v1';
+const CACHE_VERSION = 'c3bai-v2';
+const STATIC_CACHE = `${CACHE_VERSION}-static`;
+const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
+
 const ASSETS_TO_CACHE = [
   '/',
-  '/index.html',
   '/manifest.json',
-  '/offline.html'
+  '/icon-192x192.png',
 ];
 
-// Install event - cache assets
+// Install event
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+    Promise.all([
+      caches.open(STATIC_CACHE).then((cache) => {
+        console.log('[SW] Caching assets');
+        return cache.addAll(ASSETS_TO_CACHE).catch(() => {
+          console.log('[SW] Some assets could not be cached');
+        });
+      }),
+    ]).then(() => {
+      self.skipWaiting();
     })
   );
 });
 
-// Activate event - clean up old caches
+// Activate event
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          if (!cacheName.startsWith(CACHE_VERSION)) {
+            console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      return self.clients.claim();
     })
   );
 });
 
-// Fetch event - network first, cache fallback
+// Fetch event - smart caching strategy
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip cross-origin requests
-  if (url.origin !== location.origin) {
+  // Skip cross-origin and non-GET requests
+  if (url.origin !== location.origin || request.method !== 'GET') {
     return;
   }
 
@@ -50,18 +64,16 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // Cache successful API responses
           if (response.ok) {
-            const cache = caches.open(CACHE_NAME);
-            cache.then((c) => c.put(request, response.clone()));
+            const cacheCopy = response.clone();
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, cacheCopy);
+            });
           }
           return response;
         })
         .catch(() => {
-          // Return cached API response or offline page
-          return caches.match(request).then((response) => {
-            return response || caches.match('/offline.html');
-          });
+          return caches.match(request);
         })
     );
     return;
@@ -70,20 +82,29 @@ self.addEventListener('fetch', (event) => {
   // Cache first for static assets
   event.respondWith(
     caches.match(request).then((response) => {
-      return (
-        response ||
-        fetch(request).then((response) => {
-          // Cache successful responses
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          const cache = caches.open(CACHE_NAME);
-          cache.then((c) => c.put(request, response.clone()));
+      if (response) {
+        return response;
+      }
+
+      return fetch(request).then((response) => {
+        // Cache successful responses
+        if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
-        })
-      );
-    }).catch(() => {
-      return caches.match('/offline.html');
+        }
+
+        const cacheCopy = response.clone();
+        caches.open(DYNAMIC_CACHE).then((cache) => {
+          cache.put(request, cacheCopy);
+        });
+
+        return response;
+      }).catch(() => {
+        // Return offline page for navigation requests
+        if (request.mode === 'navigate') {
+          return caches.match('/');
+        }
+        return null;
+      });
     })
   );
 });
@@ -92,8 +113,8 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-inquiry') {
     event.waitUntil(
-      // Implementation for syncing inquiry data when back online
       new Promise((resolve) => {
+        console.log('[SW] Background sync: inquiry');
         resolve();
       })
     );

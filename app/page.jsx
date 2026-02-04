@@ -84,7 +84,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-8 text-center">
-            <a href="/docs/PROJECTS_DEEP_DIVE.md" className="text-blue-600 hover:underline">
+            <a href="/docs/projects" className="text-blue-600 hover:underline">
               Read full case studies →
             </a>
           </div>
@@ -103,15 +103,15 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-8 text-center">Learn More</h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <a href="/docs/BEST_PRACTICES_WEB_DESIGN.md" className="border rounded-lg p-6 hover:shadow-lg transition">
+            <a href="/docs/web-design" className="border rounded-lg p-6 hover:shadow-lg transition">
               <h3 className="font-semibold text-lg mb-2">Web Design Guide</h3>
               <p className="text-gray-600 text-sm">Complete guide to designing and building effective websites.</p>
             </a>
-            <a href="/docs/BEST_PRACTICES_MOBILE_APPS.md" className="border rounded-lg p-6 hover:shadow-lg transition">
+            <a href="/docs/mobile-apps" className="border rounded-lg p-6 hover:shadow-lg transition">
               <h3 className="font-semibold text-lg mb-2">Mobile Apps Guide</h3>
               <p className="text-gray-600 text-sm">How to build, launch, and monetize mobile applications.</p>
             </a>
-            <a href="/docs/PROJECTS_DEEP_DIVE.md" className="border rounded-lg p-6 hover:shadow-lg transition">
+            <a href="/docs/projects" className="border rounded-lg p-6 hover:shadow-lg transition">
               <h3 className="font-semibold text-lg mb-2">Case Studies</h3>
               <p className="text-gray-600 text-sm">Real projects with problem, solution, and actual results.</p>
             </a>
