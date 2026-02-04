@@ -53,6 +53,10 @@ const InquiryForm = () => {
     website: '',
     contactMethod: '',
     additionalInfo: '',
+    
+    // Section 6: Partner Qualification (optional discount tier)
+    partnerQualification: '',
+    partnerDetails: '',
   });
 
   const handleInputChange = (e) => {
@@ -99,7 +103,7 @@ const InquiryForm = () => {
   };
 
   const nextSection = () => {
-    if (section < 5) setSection(section + 1);
+    if (section < 6) setSection(section + 1);
   };
 
   const prevSection = () => {
@@ -147,7 +151,7 @@ const InquiryForm = () => {
         
         {/* Progress indicator */}
         <div className="flex gap-2">
-          {[1, 2, 3, 4, 5].map((num) => (
+          {[1, 2, 3, 4, 5, 6].map((num) => (
             <div
               key={num}
               className={`h-2 flex-1 rounded ${
@@ -157,7 +161,7 @@ const InquiryForm = () => {
           ))}
         </div>
         <p className="text-sm text-gray-600 mt-2">
-          Section {section} of 5
+          Section {section} of 6
         </p>
       </div>
 
@@ -636,6 +640,69 @@ const InquiryForm = () => {
           </div>
         )}
 
+        {/* SECTION 6: Partner Qualification */}
+        {section === 6 && (
+          <div className="space-y-6 animate-fadeIn">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-6">
+              <h3 className="text-lg font-semibold text-amber-900 mb-3">Do You Qualify for Our Partner Rate?</h3>
+              <p className="text-amber-800 text-sm mb-4">
+                We offer special pricing for referral partners, early supporters, and established relationships. 
+                Check if you qualify below.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-3">
+                How do you know us?
+              </label>
+              <div className="space-y-2">
+                {[
+                  { value: 'none', label: 'First time hearing about us' },
+                  { value: 'referral', label: 'Referred by a partner or client' },
+                  { value: 'ongoing', label: 'Existing customer or long-term contact' },
+                  { value: 'partner', label: 'We discussed a partnership' },
+                  { value: 'community', label: 'Active in our community/network' }
+                ].map(option => (
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <input
+                      type="radio"
+                      name="partnerQualification"
+                      value={option.value}
+                      checked={formData.partnerQualification === option.value}
+                      onChange={handleInputChange}
+                    />
+                    <span className="text-gray-700">{option.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {(formData.partnerQualification && formData.partnerQualification !== 'none') && (
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Tell us more (optional)
+                </label>
+                <textarea
+                  name="partnerDetails"
+                  value={formData.partnerDetails}
+                  onChange={handleInputChange}
+                  placeholder="Who referred you? What partnership did we discuss? Any context that helps us understand your relationship..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg h-20"
+                />
+                <p className="text-xs text-gray-600 mt-1">
+                  This helps us validate your eligibility for partner pricing.
+                </p>
+              </div>
+            )}
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-900">
+                <strong>Partner Rate:</strong> $65/hour instead of $125/hour — available to qualified partners, referral sources, and long-term relationships.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Navigation Buttons */}
         <div className="flex gap-4 mt-8">
           {section > 1 && (
@@ -648,7 +715,7 @@ const InquiryForm = () => {
             </button>
           )}
           
-          {section < 5 ? (
+          {section < 6 ? (
             <button
               type="button"
               onClick={nextSection}

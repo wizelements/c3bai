@@ -51,6 +51,7 @@ function estimateProjectScope(data) {
   let estimatedHours = 20; // baseline
   let tier = 'Starter';
   let complexity = 'simple';
+  let hourlyRate = 125; // default rate
 
   // Token volume impact
   if (data.tokenVolume === '1m-10m') estimatedHours += 15;
@@ -88,13 +89,42 @@ function estimateProjectScope(data) {
   // Cap at reasonable values
   if (estimatedHours > 200) estimatedHours = 200;
 
+  // Check partner qualification for discount
+  const isPartnerQualified = data.partnerQualification && data.partnerQualification !== 'none';
+  if (isPartnerQualified) {
+    hourlyRate = 65; // Partner rate
+  }
+
+  // Calculate pricing tiers with appropriate rates
+  const starterHours = 20;
+  const proHours = 60;
+  const enterpriseHours = 160;
+
+  let monthlyRate, setupFee, hoursPerMonth;
+
+  if (tier === 'Starter') {
+    monthlyRate = Math.ceil((starterHours * hourlyRate) / 100) * 100;
+    setupFee = monthlyRate;
+    hoursPerMonth = starterHours;
+  } else if (tier === 'Professional') {
+    monthlyRate = Math.ceil((proHours * hourlyRate) / 100) * 100;
+    setupFee = isPartnerQualified ? 3000 : 5000;
+    hoursPerMonth = proHours;
+  } else {
+    monthlyRate = isPartnerQualified ? 10400 : 20000; // 160 hours × $65 or $125
+    setupFee = isPartnerQualified ? 10400 : 20000;
+    hoursPerMonth = enterpriseHours;
+  }
+
   return {
     estimatedHours: Math.ceil(estimatedHours / 10) * 10,
     tier,
     complexity,
-    monthlyRate: tier === 'Starter' ? 2500 : tier === 'Professional' ? 7500 : 20000,
-    hoursPerMonth: tier === 'Starter' ? 20 : tier === 'Professional' ? 60 : 160,
-    setupFee: tier === 'Starter' ? 2500 : tier === 'Professional' ? 5000 : 20000,
+    hourlyRate,
+    isPartnerQualified,
+    monthlyRate,
+    hoursPerMonth,
+    setupFee,
     estimatedDuration: (
       estimatedHours <= 40 ? '2-4 weeks' :
       estimatedHours <= 80 ? '4-8 weeks' :
@@ -102,5 +132,6 @@ function estimateProjectScope(data) {
       '16+ weeks'
     ),
     disclaimer: 'This is a rough estimate based on your responses. We will refine during our discovery call.',
+    partnerSavings: isPartnerQualified ? Math.ceil((starterHours * 60 * 12)) : null,
   };
 }
