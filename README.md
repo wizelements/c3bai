@@ -52,20 +52,13 @@ npm run dev
 # Open http://localhost:3000
 ```
 
-## Deployment
+## Live Deployment
 
-Deploy to Vercel:
+**Site is live:** https://cod3blackagency.vercel.app/c3bai (Vercel)
 
-```bash
-vercel
-```
+**GitHub:** https://github.com/wizelements/c3bai
 
-Or use GitHub integration (recommended):
-
-```bash
-git push origin main
-# Vercel auto-deploys
-```
+Auto-deploys on `git push origin master` via GitHub integration.
 
 ## Project Structure
 
