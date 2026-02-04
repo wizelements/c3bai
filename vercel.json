@@ -1,0 +1,20 @@
+{
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "env": [
+    {
+      "key": "STRIPE_SECRET_KEY",
+      "description": "Stripe secret key for payments"
+    },
+    {
+      "key": "STRIPE_WEBHOOK_SECRET",
+      "description": "Stripe webhook signing secret"
+    },
+    {
+      "key": "EMAIL_API_KEY",
+      "description": "Email service API key (Resend, SendGrid, etc)"
+    }
+  ]
+}
