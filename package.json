@@ -1,29 +1,33 @@
 {
   "name": "c3bai",
-  "version": "2.0.0",
-  "description": "Cod3Black Agency - Custom web design, apps, and software. $125/hour transparent pricing.",
+  "version": "3.0.0",
+  "description": "Cod3Black Agency - Done-for-you AI business systems for small businesses, creators, and local brands.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "db:setup": "node scripts/setup-db.js"
   },
   "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "lucide-react": "^0.344.0",
+    "next": "^15.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "next": "^15.0.0",
-    "lucide-react": "^0.344.0"
+    "resend": "^4.0.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.4.0",
-    "autoprefixer": "^10.4.0",
-    "@types/react": "^18.3.0",
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
+    "@types/react": "^18.3.0",
+    "autoprefixer": "^10.4.0",
     "eslint": "^8.0.0",
-    "eslint-config-next": "^15.0.0"
+    "eslint-config-next": "^15.0.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.0.0"
   }
 }

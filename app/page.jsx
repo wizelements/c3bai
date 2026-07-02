@@ -1,60 +1,127 @@
 'use client';
 
 import Link from 'next/link';
-import { ExternalLink, ArrowRight, Check, Zap, Users, Gauge } from 'lucide-react';
+import {
+  ExternalLink,
+  ArrowRight,
+  Check,
+  Zap,
+  Calendar,
+  Mail,
+  BarChart3,
+  Bot,
+} from 'lucide-react';
 import InquiryForm from './inquiry-form';
 
 const projects = [
   {
-    name: 'Beltline Golf',
-    description: 'Golf booking system with online payments, leaderboard, and digital waivers.',
-    stats: ['3x bookings', '$15K/mo revenue', '4.8★ rating'],
-    url: 'https://beltlinegolf.com',
-    tags: ['React', 'Stripe', 'Real-time'],
+    name: 'Taste of Gratitude',
+    description:
+      'Wellness beverage brand with weekly menu system, e-commerce, market funnel, and order alert automations.',
+    stats: ['E-commerce + menu', 'Order alerts', 'Market funnel'],
+    url: 'https://tasteofgratitude.shop',
+    tags: ['Next.js', 'Stripe', 'Square', 'SMS'],
   },
   {
-    name: 'TradeAlerts',
-    description: 'React Native trading app optimized for performance and reliability.',
-    stats: ['0 errors', '3.2s→1.1s load', '98 Lighthouse'],
-    url: 'https://tradealerts.app',
-    tags: ['React Native', 'PWA', 'TypeScript'],
+    name: 'Atlanta Saddle Club',
+    description:
+      'Nonprofit community site with events calendar, gallery, member intake, and admin content controls.',
+    stats: ['Events + calendar', 'Member intake', 'Admin dashboard'],
+    url: 'https://asca-pwa.vercel.app',
+    tags: ['Next.js', 'Turso', 'Admin'],
+  },
+  {
+    name: 'She Drives Smart',
+    description:
+      'Survey-driven brand funnel that qualifies leads and routes them into the right offer automatically.',
+    stats: ['Lead qualification', 'Auto-routing', 'Brand system'],
+    url: '#',
+    tags: ['Funnel', 'Automation', 'Brand'],
   },
   {
     name: 'Gratog',
-    description: 'Real-time project collaboration and task management platform.',
-    stats: ['90% adoption', '95% on-time tasks', '80% fewer meetings'],
-    url: 'https://gratog.app',
-    tags: ['Collaboration', 'Dashboard', 'Real-time'],
-  },
-  {
-    name: 'Image-to-SVG',
-    description: 'Batch image converter with AI-powered vector tracing.',
-    stats: ['2,500h → 1h', 'Saved $50K+', '99% accuracy'],
-    url: 'https://image-to-svg.app',
-    tags: ['AI', 'Batch Processing', 'Automation'],
+    description:
+      'E-commerce and marketplace platform with payments, SMS, admin controls, and operations dashboards.',
+    stats: ['Payments', 'Operations', 'Dashboard'],
+    url: 'https://gratog.vercel.app',
+    tags: ['Next.js', 'Square', 'Twilio', 'Sentry'],
   },
 ];
 
-const services = [
+const systems = [
   {
-    icon: '🎨',
-    title: 'Web Design & Development',
-    description: 'Marketing sites, portfolios, SaaS dashboards, and custom web applications.',
+    icon: Bot,
+    title: 'AI Workflows',
+    description:
+      'Automate repetitive tasks: lead follow-up, intake, content drafts, report generation, and customer support.',
   },
   {
-    icon: '📱',
-    title: 'Mobile Apps',
-    description: 'iOS & Android apps, cross-platform development, and app store launches.',
+    icon: Calendar,
+    title: 'Booking & Scheduling',
+    description:
+      'Online booking, appointment scheduling, calendar sync, and automated reminders for service providers.',
   },
   {
-    icon: '⚙️',
-    title: 'Integrations & APIs',
-    description: 'Connect systems, third-party APIs, webhooks, and data pipelines.',
+    icon: Mail,
+    title: 'Funnels & Email Capture',
+    description:
+      'Landing pages, lead magnets, email sequences, and qualification flows that turn visitors into customers.',
   },
   {
-    icon: '🚀',
-    title: 'MVPs & Redesigns',
-    description: 'Proof of concepts, existing site improvements, and tech modernization.',
+    icon: BarChart3,
+    title: 'Admin Dashboards',
+    description:
+      'Custom internal tools to manage customers, orders, members, content, and operations in one place.',
+  },
+];
+
+const packages = [
+  {
+    name: 'Starter System',
+    price: '$1,500 – $2,500',
+    description: 'Website + one funnel + contact/booking + basic automation.',
+    features: [
+      'Responsive website (5–7 pages)',
+      'Lead-capture or booking form',
+      'Email notifications',
+      'Basic automation (1–2 flows)',
+      '30 days of support',
+    ],
+    cta: 'Get a Starter Quote',
+    href: '/services',
+    highlighted: false,
+  },
+  {
+    name: 'Growth System',
+    price: '$4,000 – $6,000',
+    description:
+      'Website + admin dashboard + payments/booking + automation + AI workflow setup.',
+    features: [
+      'Everything in Starter',
+      'Custom admin dashboard',
+      'Payments or booking checkout',
+      '3–5 automations + 1 AI workflow',
+      '90 days of support',
+    ],
+    cta: 'Get a Growth Quote',
+    href: '/services',
+    highlighted: true,
+  },
+  {
+    name: 'Automation Retainer',
+    price: '$500 – $1,500/mo',
+    description:
+      'Ongoing optimization, new automations, monthly reports, and priority support.',
+    features: [
+      'Monthly optimization sprint',
+      'New automation each month',
+      'Performance report',
+      'Priority bug fixes',
+      'Quarterly strategy review',
+    ],
+    cta: 'Start a Retainer',
+    href: '/services',
+    highlighted: false,
   },
 ];
 
@@ -69,12 +136,10 @@ export default function Home() {
             Cod3Black
           </Link>
           <div className="hidden md:flex gap-8 text-sm font-medium">
-            <a href="#services" className="text-gray-700 hover:text-blue-600 transition">Services</a>
+            <a href="#systems" className="text-gray-700 hover:text-blue-600 transition">Systems</a>
             <a href="#projects" className="text-gray-700 hover:text-blue-600 transition">Projects</a>
+            <Link href="/services" className="text-gray-700 hover:text-blue-600 transition">Services</Link>
             <a href="#inquiry" className="text-gray-700 hover:text-blue-600 transition">Get Started</a>
-            <a href="mailto:hello@c3bai.com" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-              Contact
-            </a>
           </div>
         </div>
       </nav>
@@ -82,77 +147,80 @@ export default function Home() {
       <main className="min-h-screen">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 text-white pt-20 pb-32 px-4 sm:px-6">
-          {/* Background decoration */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400 rounded-full opacity-10 blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400 rounded-full opacity-10 blur-3xl"></div>
           </div>
-          
+
           <div className="relative max-w-5xl mx-auto text-center">
             <div className="inline-block mb-6 px-4 py-2 bg-blue-500 bg-opacity-30 border border-blue-300 rounded-full text-sm font-semibold">
-              ✨ Production-Grade Software [BUILD 60bd1c9]
+              Done-for-you AI business systems
             </div>
-            
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
-              Custom Web Design, Apps & Software
+
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+              Stop Manually Chasing Customers
             </h1>
-            
+
             <p className="text-lg sm:text-xl mb-12 text-blue-100 max-w-3xl mx-auto leading-relaxed">
-              You're not buying API access or templates. You're buying experienced engineering hours at fair, transparent rates. We build production-grade applications that solve real problems and deliver real results.
+              Cod3Black Agency installs the website, funnel, admin dashboard, automation, and AI workflow that lets your business capture leads, take orders, and manage operations while you sleep.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-              <a href="#inquiry" className="px-8 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition shadow-lg inline-flex items-center justify-center gap-2">
-                Start Your Project <ArrowRight size={20} />
+              <a
+                href="#inquiry"
+                className="px-8 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition shadow-lg inline-flex items-center justify-center gap-2"
+              >
+                Get Your Free Systems Audit <ArrowRight size={20} />
               </a>
-              <a href="#projects" className="px-8 py-4 border-2 border-white text-white font-bold rounded-lg hover:bg-blue-500 transition inline-flex items-center justify-center gap-2">
-                See Our Work <ExternalLink size={20} />
-              </a>
+              <Link
+                href="/services"
+                className="px-8 py-4 border-2 border-white text-white font-bold rounded-lg hover:bg-blue-500 transition inline-flex items-center justify-center gap-2"
+              >
+                See Packages <ExternalLink size={20} />
+              </Link>
             </div>
-            
-            {/* Pricing cards */}
-            <div className="grid sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-20 hover:border-opacity-40 transition">
-                <div className="text-4xl font-bold mb-2">$2,500</div>
-                <div className="text-sm text-blue-100 mb-3">Starter</div>
-                <div className="text-xs text-blue-200">20 hours/month</div>
-              </div>
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-20 hover:border-opacity-40 transition ring-2 ring-yellow-400 ring-opacity-50">
-                <div className="text-4xl font-bold mb-2">$7,500</div>
-                <div className="text-sm text-blue-100 mb-3">Professional</div>
-                <div className="text-xs text-blue-200">60 hours/month</div>
-              </div>
-              <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-20 hover:border-opacity-40 transition">
-                <div className="text-4xl font-bold mb-2">$20K+</div>
-                <div className="text-sm text-blue-100 mb-3">Enterprise</div>
-                <div className="text-xs text-blue-200">160+ hours/month</div>
-              </div>
+
+            <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {packages.map((pkg) => (
+                <div
+                  key={pkg.name}
+                  className={`bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-20 hover:border-opacity-40 transition ${pkg.highlighted ? 'ring-2 ring-yellow-400 ring-opacity-50' : ''}`}
+                >
+                  <div className="text-xs text-blue-200 mb-2">{pkg.name}</div>
+                  <div className="text-3xl font-bold mb-2">{pkg.price}</div>
+                  <div className="text-sm text-blue-100">{pkg.description}</div>
+                </div>
+              ))}
             </div>
-            
-            <p className="text-blue-100 text-sm mt-8">
-              💰 <span className="font-semibold">Partner Rate:</span> $65/hour for referral partners, ongoing relationships, and early supporters
-            </p>
           </div>
         </section>
 
-        {/* Services */}
-        <section id="services" className="py-24 px-4 sm:px-6 bg-gray-50">
+        {/* Systems We Install */}
+        <section id="systems" className="py-24 px-4 sm:px-6 bg-gray-50">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">What We Build</h2>
+              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">The Systems We Install</h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                From simple marketing websites to complex SaaS platforms, we deliver production-grade solutions with transparent pricing.
+                We don't just build websites. We build the connected systems that run your business.
               </p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
-              {services.map((service, idx) => (
-                <div key={idx} className="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition border border-gray-200">
-                  <div className="text-4xl mb-4">{service.icon}</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{service.title}</h3>
-                  <p className="text-gray-600">{service.description}</p>
-                </div>
-              ))}
+              {systems.map((system, idx) => {
+                const Icon = system.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition border border-gray-200"
+                  >
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                      <Icon className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{system.title}</h3>
+                    <p className="text-gray-600">{system.description}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -161,12 +229,12 @@ export default function Home() {
         <section id="projects" className="py-24 px-4 sm:px-6 bg-white">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Real Projects We've Shipped</h2>
+              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Real Systems We've Built</h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Projects with real problems, real solutions, and real results. Click to see them live.
+                Proof of work for food brands, nonprofits, service providers, and creators.
               </p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-8 mb-12">
               {projects.map((project, idx) => (
                 <a
@@ -177,12 +245,16 @@ export default function Home() {
                   className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-blue-600 hover:shadow-xl transition cursor-pointer"
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition">{project.name}</h3>
-                    <ExternalLink size={20} className="text-gray-400 group-hover:text-blue-600 transition" />
+                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition">
+                      {project.name}
+                    </h3>
+                    {project.url !== '#' && (
+                      <ExternalLink size={20} className="text-gray-400 group-hover:text-blue-600 transition" />
+                    )}
                   </div>
-                  
+
                   <p className="text-gray-600 mb-6 line-clamp-2">{project.description}</p>
-                  
+
                   <div className="space-y-3 mb-6">
                     {project.stats.map((stat, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
@@ -191,24 +263,26 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag, i) => (
-                      <span key={i} className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+                      <span
+                        key={i}
+                        className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full"
+                      >
                         {tag}
                       </span>
                     ))}
                   </div>
-                  
-                  <div className="mt-6 pt-6 border-t border-gray-200 flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-3 transition">
-                    View Live <ExternalLink size={16} />
-                  </div>
                 </a>
               ))}
             </div>
-            
+
             <div className="text-center">
-              <Link href="/docs/projects" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold text-lg">
+              <Link
+                href="/docs/projects"
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold text-lg"
+              >
                 Read Full Case Studies <ArrowRight size={20} />
               </Link>
             </div>
@@ -219,68 +293,14 @@ export default function Home() {
         <section id="inquiry" className="py-24 px-4 sm:px-6 bg-gray-50">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Tell Us About Your Project</h2>
+              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Get Your Free Systems Audit</h2>
               <p className="text-lg text-gray-600">
-                Let's understand your needs and give you an accurate estimate. Takes about 10 minutes.
+                Tell us about your business. We'll identify the highest-leverage system to build or automate first.
               </p>
             </div>
             <div className="bg-white rounded-xl shadow-lg p-8 sm:p-12">
               <InquiryForm />
             </div>
-          </div>
-        </section>
-
-        {/* Resources Section */}
-        <section className="py-24 px-4 sm:px-6 bg-white">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Learn More</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                In-depth guides and best practices for building successful digital products.
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              <Link href="/docs/web-design" className="group bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-8 hover:border-blue-600 hover:shadow-lg transition">
-                <div className="text-4xl mb-4">🎨</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition">Web Design Guide</h3>
-                <p className="text-gray-600 mb-4">Complete guide to designing and building effective websites that convert visitors into customers.</p>
-                <div className="text-blue-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition">
-                  Read Guide <ArrowRight size={18} />
-                </div>
-              </Link>
-              
-              <Link href="/docs/mobile-apps" className="group bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-8 hover:border-purple-600 hover:shadow-lg transition">
-                <div className="text-4xl mb-4">📱</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition">Mobile Apps Guide</h3>
-                <p className="text-gray-600 mb-4">How to build, launch, and monetize mobile applications for iOS and Android platforms.</p>
-                <div className="text-purple-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition">
-                  Read Guide <ArrowRight size={18} />
-                </div>
-              </Link>
-              
-              <Link href="/docs/projects" className="group bg-gradient-to-br from-green-50 to-teal-50 border-2 border-green-200 rounded-xl p-8 hover:border-green-600 hover:shadow-lg transition">
-                <div className="text-4xl mb-4">📊</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition">Case Studies</h3>
-                <p className="text-gray-600 mb-4">Real projects with detailed breakdowns of problems, solutions, and the actual results achieved.</p>
-                <div className="text-green-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition">
-                  Read Cases <ArrowRight size={18} />
-                </div>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 px-4 sm:px-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-6">Ready to Build Something Great?</h2>
-            <p className="text-lg mb-8 text-blue-100">
-              Let's start with a conversation. Tell us about your project and we'll provide a transparent estimate in minutes.
-            </p>
-            <a href="#inquiry" className="inline-block px-8 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition shadow-lg">
-              Get Your Estimate Now
-            </a>
           </div>
         </section>
 
@@ -293,37 +313,51 @@ export default function Home() {
                   <Zap size={20} className="text-blue-400" />
                   Cod3Black
                 </h4>
-                <p className="text-sm text-gray-400">
-                  Custom web design, apps, and software. $125/hour transparent pricing.
-                </p>
+                <p className="text-sm text-gray-400">Done-for-you AI business systems for small businesses and creators.</p>
               </div>
               <div>
                 <h5 className="text-white font-semibold mb-4">Quick Links</h5>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="#services" className="text-gray-400 hover:text-white transition">Services</a></li>
-                  <li><a href="#projects" className="text-gray-400 hover:text-white transition">Projects</a></li>
-                  <li><a href="#inquiry" className="text-gray-400 hover:text-white transition">Inquiry</a></li>
+                  <li>
+                    <a href="#systems" className="text-gray-400 hover:text-white transition">Systems</a>
+                  </li>
+                  <li>
+                    <a href="#projects" className="text-gray-400 hover:text-white transition">Projects</a>
+                  </li>
+                  <li>
+                    <Link href="/services" className="text-gray-400 hover:text-white transition">Services</Link>
+                  </li>
+                  <li>
+                    <a href="#inquiry" className="text-gray-400 hover:text-white transition">Get Started</a>
+                  </li>
                 </ul>
               </div>
               <div>
                 <h5 className="text-white font-semibold mb-4">Resources</h5>
                 <ul className="space-y-2 text-sm">
-                  <li><Link href="/docs/web-design" className="text-gray-400 hover:text-white transition">Web Design</Link></li>
-                  <li><Link href="/docs/mobile-apps" className="text-gray-400 hover:text-white transition">Mobile Apps</Link></li>
-                  <li><Link href="/docs/projects" className="text-gray-400 hover:text-white transition">Case Studies</Link></li>
+                  <li>
+                    <Link href="/docs/web-design" className="text-gray-400 hover:text-white transition">Web Design</Link>
+                  </li>
+                  <li>
+                    <Link href="/docs/mobile-apps" className="text-gray-400 hover:text-white transition">Mobile Apps</Link>
+                  </li>
+                  <li>
+                    <Link href="/docs/projects" className="text-gray-400 hover:text-white transition">Case Studies</Link>
+                  </li>
                 </ul>
               </div>
               <div>
                 <h5 className="text-white font-semibold mb-4">Contact</h5>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="mailto:hello@c3bai.com" className="text-blue-400 hover:text-blue-300 transition">hello@c3bai.com</a></li>
-                  <li className="text-gray-400">Available for inquiries</li>
+                  <li>
+                    <a href="mailto:hello@c3bai.com" className="text-blue-400 hover:text-blue-300 transition">hello@c3bai.com</a>
+                  </li>
                 </ul>
               </div>
             </div>
-            
+
             <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-              <p>© 2026 Cod3Black Agency. All rights reserved. Built for production.</p>
+              <p>© 2026 Cod3Black Agency. All rights reserved.</p>
             </div>
           </div>
         </footer>

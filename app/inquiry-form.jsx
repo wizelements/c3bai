@@ -1,78 +1,60 @@
 /**
- * Cod3Black Agency Project Inquiry Form
- * 
- * Purpose: Collect structured project information for fair, transparent pricing
- * Features:
- * - Multi-section form for custom web design, apps, and software projects
- * - Works for non-technical founders and experienced teams
- * - Automatic scope estimation and rough pricing
- * - Mobile-responsive and PWA-ready
- * - 10-minute completion time
+ * Cod3Black Agency Systems Audit Form
+ *
+ * Collects structured business information so we can recommend
+ * the highest-leverage website, funnel, dashboard, automation, or AI workflow.
  */
 
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, ArrowRight } from 'lucide-react';
 
 const InquiryForm = () => {
   const [section, setSection] = useState(1);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [estimate, setEstimate] = useState(null);
   const [formData, setFormData] = useState({
-    // Section 1: Basics
     projectName: '',
     description: '',
     problemStatement: '',
-    projectType: '', // web design, app, software, integration, mvp, redesign
-    
-    // Section 2: Scope Estimation
-    designScope: '', // simple, moderate, complex
-    integrationCount: '', // how many third-party integrations
-    databaseNeeded: '', // yes/no
-    integrationTypes: [], // Stripe, Slack, etc
-    deploymentRequirements: [], // mobile, web, both
-    
-    // Section 3: Timeline & Budget
+    projectType: '',
+    designScope: '',
+    integrationCount: '',
+    databaseNeeded: '',
+    deploymentRequirements: [],
+    specialRequirements: [],
     timeline: '',
     budgetExpectation: '',
-    
-    // Section 4: Team & Complexity
     techStack: '',
     existingCode: '',
-    teamLevel: '', // non-tech, mixed, strong-dev, enterprise
-    specialRequirements: [],
-    
-    // Section 5: Contact
+    teamLevel: '',
     name: '',
     email: '',
     company: '',
     website: '',
     contactMethod: '',
     additionalInfo: '',
-    
-    // Section 6: Partner Qualification
     partnerQualification: '',
     partnerDetails: '',
+    packageInterest: '',
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCheckboxChange = (e, fieldName) => {
     const { value, checked } = e.target;
-    setFormData(prev => {
+    setFormData((prev) => {
       const currentArray = prev[fieldName] || [];
       return {
         ...prev,
         [fieldName]: checked
           ? [...currentArray, value]
-          : currentArray.filter(item => item !== value)
+          : currentArray.filter((item) => item !== value),
       };
     });
   };
@@ -88,7 +70,9 @@ const InquiryForm = () => {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+      if (response.ok && result.success) {
+        setEstimate(result.estimate);
         setSubmitted(true);
       }
     } catch (error) {
@@ -110,26 +94,36 @@ const InquiryForm = () => {
     return (
       <div className="max-w-2xl mx-auto p-6 text-center">
         <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-        <h2 className="text-3xl font-bold mb-3">Thanks! We got your inquiry.</h2>
+        <h2 className="text-3xl font-bold mb-3">Thanks! We got your audit request.</h2>
         <p className="text-lg text-gray-600 mb-4">
-          We'll review your project scope and send you a preliminary estimate within 24 hours.
+          We'll review your business and recommend the highest-leverage system to build or automate first.
         </p>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6 text-left">
+
+        {estimate && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6 text-left">
+            <h3 className="font-semibold mb-3">Rough estimate based on your answers:</h3>
+            <ul className="space-y-2 text-gray-700">
+              <li><strong>Project type:</strong> {estimate.projectTypeLabel}</li>
+              <li><strong>Estimated hours:</strong> {estimate.estimatedHours}</li>
+              <li><strong>Suggested package:</strong> {estimate.tier}</li>
+              <li><strong>Estimated duration:</strong> {estimate.estimatedDuration}</li>
+              <li><strong>Monthly system investment:</strong> ${estimate.monthlyRate?.toLocaleString?.() || estimate.monthlyRate}</li>
+            </ul>
+            <p className="text-sm text-gray-500 mt-4">{estimate.disclaimer}</p>
+          </div>
+        )}
+
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6 text-left">
           <h3 className="font-semibold mb-3">What happens next:</h3>
           <ol className="space-y-2 text-gray-700">
-            <li>✓ <strong>Immediate:</strong> Auto-response email with rough scope estimate</li>
-            <li>✓ <strong>Within 24 hours:</strong> We review your details and validate estimates</li>
-            <li>✓ <strong>Within 48 hours:</strong> We call to confirm scope and answer questions</li>
-            <li>✓ <strong>Follow-up:</strong> Formal quote via email (valid for 30 days)</li>
+            <li>✓ <strong>Immediate:</strong> Confirmation email with your estimate</li>
+            <li>✓ <strong>Within 24 hours:</strong> We review and recommend the right package</li>
+            <li>✓ <strong>Within 48 hours:</strong> We schedule a 15-minute systems call</li>
+            <li>✓ <strong>After the call:</strong> Fixed-scope proposal valid for 30 days</li>
           </ol>
         </div>
-        <p className="text-gray-600 mb-6">
-          Check your email for the initial response. Questions? Reply directly or call us.
-        </p>
-        <a
-          href="/"
-          className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
+
+        <a href="/" className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
           Back to Home
         </a>
       </div>
@@ -139,26 +133,20 @@ const InquiryForm = () => {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Project Inquiry</h1>
+        <h1 className="text-3xl font-bold mb-2">Systems Audit</h1>
         <p className="text-gray-600 mb-4">
-          Help us understand your project so we can give you an accurate estimate.
-          This takes about 10 minutes.
+          Help us understand your business and where a system would save you the most time. Takes about 8 minutes.
         </p>
-        
-        {/* Progress indicator */}
+
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5, 6].map((num) => (
             <div
               key={num}
-              className={`h-2 flex-1 rounded ${
-                num <= section ? 'bg-blue-600' : 'bg-gray-200'
-              }`}
+              className={`h-2 flex-1 rounded ${num <= section ? 'bg-blue-600' : 'bg-gray-200'}`}
             />
           ))}
         </div>
-        <p className="text-sm text-gray-600 mt-2">
-          Section {section} of 6
-        </p>
+        <p className="text-sm text-gray-600 mt-2">Section {section} of 6</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -166,34 +154,30 @@ const InquiryForm = () => {
         {section === 1 && (
           <div className="space-y-6 animate-fadeIn">
             <div>
-              <label className="block text-sm font-semibold mb-2">
-                What's your project called?
-              </label>
+              <label className="block text-sm font-semibold mb-2">What's your business or project called?</label>
               <input
                 type="text"
                 name="projectName"
                 value={formData.projectName}
                 onChange={handleInputChange}
-                placeholder="e.g., Booking Platform, Mobile App, SaaS Dashboard"
+                placeholder="e.g., Taste of Gratitude, Atlanta Saddle Club"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">
-                What type of project is this?
-              </label>
+              <label className="block text-sm font-semibold mb-2">What kind of system do you need most?</label>
               <div className="space-y-2">
                 {[
-                  { value: 'website', label: 'Website (marketing, portfolio, content)' },
-                  { value: 'web-app', label: 'Web App (dashboard, SaaS, tool)' },
-                  { value: 'mobile-app', label: 'Mobile App (iOS/Android)' },
-                  { value: 'integration', label: 'Integration (connecting systems)' },
-                  { value: 'redesign', label: 'Redesign (existing site/app)' },
-                  { value: 'mvp', label: 'MVP (proof of concept)' },
-                  { value: 'other', label: 'Something else' }
-                ].map(option => (
+                  { value: 'website', label: 'Website + funnel (capture leads and sales)' },
+                  { value: 'web-app', label: 'Web app / admin dashboard (manage operations)' },
+                  { value: 'mobile-app', label: 'Mobile app (iOS/Android)' },
+                  { value: 'integration', label: 'Integration / automation (connect tools)' },
+                  { value: 'redesign', label: 'Redesign / improve an existing site or app' },
+                  { value: 'mvp', label: 'MVP (prove a new product idea fast)' },
+                  { value: 'other', label: 'Something else' },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -209,41 +193,28 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">
-                Describe your project briefly
-              </label>
+              <label className="block text-sm font-semibold mb-2">Describe what your business does</label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="What does it do? Who uses it? (2-3 sentences)"
+                placeholder="What do you sell? Who do you serve? How do customers find you today?"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg h-24"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">
-                What's the core problem you're solving?
-              </label>
+              <label className="block text-sm font-semibold mb-2">What's the biggest time-waster or bottleneck right now?</label>
               <input
                 type="text"
                 name="problemStatement"
                 value={formData.problemStatement}
                 onChange={handleInputChange}
-                placeholder="What pain point does this solve?"
+                placeholder="e.g., I spend 3 hours/day answering booking DMs"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg"
                 required
               />
-              <p className="text-xs text-gray-600 mt-1">
-                Example: "Founders waste 4 hours/week managing invoices manually"
-              </p>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-gray-700">
-                <strong>Tip:</strong> Clear problem statements lead to better estimates. The more detail, the more accurate our pricing.
-              </p>
             </div>
           </div>
         )}
@@ -252,16 +223,14 @@ const InquiryForm = () => {
         {section === 2 && (
           <div className="space-y-6 animate-fadeIn">
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                How much design work is needed?
-              </label>
+              <label className="block text-sm font-semibold mb-3">How much design work is needed?</label>
               <div className="space-y-2">
                 {[
-                  { value: 'template', label: 'Use template/existing design (minimal design)' },
-                  { value: 'moderate', label: 'Moderate design (customized layouts, colors, fonts)' },
-                  { value: 'custom', label: 'Custom design (unique UI, brand identity)' },
-                  { value: 'unsure', label: "Not sure yet" }
-                ].map(option => (
+                  { value: 'template', label: 'Use a clean template (move fast)' },
+                  { value: 'moderate', label: 'Customized design (brand colors, layouts)' },
+                  { value: 'custom', label: 'Fully custom design (unique identity)' },
+                  { value: 'unsure', label: "Not sure yet" },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -277,16 +246,14 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                Will this need a database or backend?
-              </label>
+              <label className="block text-sm font-semibold mb-3">Will this need a database or backend?</label>
               <div className="space-y-2">
                 {[
                   { value: 'no', label: 'No (static site, marketing page)' },
-                  { value: 'simple', label: 'Simple (basic storage, forms)' },
-                  { value: 'complex', label: 'Complex (user accounts, real-time data, analytics)' },
-                  { value: 'unsure', label: "Not sure yet" }
-                ].map(option => (
+                  { value: 'simple', label: 'Simple (forms, contacts, orders)' },
+                  { value: 'complex', label: 'Complex (accounts, real-time data, reports)' },
+                  { value: 'unsure', label: "Not sure yet" },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -302,17 +269,15 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                How many third-party integrations? (Stripe, Slack, APIs, etc)
-              </label>
+              <label className="block text-sm font-semibold mb-3">How many third-party integrations?</label>
               <div className="space-y-2">
                 {[
-                  { value: 'none', label: 'None (standalone project)' },
+                  { value: 'none', label: 'None (standalone)' },
                   { value: '1-2', label: '1-2 integrations' },
                   { value: '3-5', label: '3-5 integrations' },
                   { value: '5-plus', label: '5+ integrations' },
-                  { value: 'unsure', label: "Not sure yet" }
-                ].map(option => (
+                  { value: 'unsure', label: "Not sure yet" },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -328,16 +293,14 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                Which platforms do you need?
-              </label>
+              <label className="block text-sm font-semibold mb-3">Which platforms do you need?</label>
               <div className="space-y-2">
                 {[
                   { value: 'web', label: 'Web (desktop & mobile browsers)' },
                   { value: 'ios', label: 'iOS app' },
                   { value: 'android', label: 'Android app' },
-                  { value: 'both-mobile', label: 'Both iOS & Android' }
-                ].map(option => (
+                  { value: 'both-mobile', label: 'Both iOS & Android' },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="checkbox"
@@ -352,17 +315,15 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                Any special requirements?
-              </label>
+              <label className="block text-sm font-semibold mb-3">Any special requirements?</label>
               <div className="space-y-2">
                 {[
                   { value: 'compliance', label: 'Compliance/Security (HIPAA, GDPR, PCI)' },
-                  { value: 'performance', label: 'Performance (fast load times, high traffic)' },
+                  { value: 'performance', label: 'Performance (fast load, high traffic)' },
                   { value: 'seo', label: 'SEO optimization' },
                   { value: 'training', label: 'Training/Documentation' },
-                  { value: 'none', label: 'None listed' }
-                ].map(option => (
+                  { value: 'none', label: 'None listed' },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="checkbox"
@@ -382,17 +343,15 @@ const InquiryForm = () => {
         {section === 3 && (
           <div className="space-y-6 animate-fadeIn">
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                When do you need this?
-              </label>
+              <label className="block text-sm font-semibold mb-3">When do you need this live?</label>
               <div className="space-y-2">
                 {[
                   { value: 'flexible', label: 'Flexible (no rush)' },
                   { value: '3-months', label: '3 months' },
                   { value: '6-weeks', label: '6 weeks' },
                   { value: '4-weeks', label: '4 weeks' },
-                  { value: 'urgent', label: 'ASAP (2-3 weeks)' }
-                ].map(option => (
+                  { value: 'urgent', label: 'ASAP (2-3 weeks)' },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -408,17 +367,15 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                What's your budget expectation?
-              </label>
+              <label className="block text-sm font-semibold mb-3">What's your budget range?</label>
               <div className="space-y-2">
                 {[
                   { value: 'under-5k', label: 'Under $5,000' },
                   { value: '5k-15k', label: '$5,000 - $15,000' },
                   { value: '15k-50k', label: '$15,000 - $50,000' },
                   { value: '50k-plus', label: '$50,000+' },
-                  { value: 'unsure', label: "Not sure yet" }
-                ].map(option => (
+                  { value: 'unsure', label: "Not sure yet" },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -432,29 +389,21 @@ const InquiryForm = () => {
                 ))}
               </div>
             </div>
-
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <p className="text-sm text-amber-900">
-                <strong>Our approach:</strong> We charge $125/hour or $65/hour for partners. A small website might be 20-40 hours. A custom app could be 100-200+ hours. We'll estimate based on your scope.
-              </p>
-            </div>
           </div>
         )}
 
-        {/* SECTION 4: Team & Technical */}
+        {/* SECTION 4: Team & Complexity */}
         {section === 4 && (
           <div className="space-y-6 animate-fadeIn">
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                Do you have existing code or a live site?
-              </label>
+              <label className="block text-sm font-semibold mb-3">Do you have existing code or a live site?</label>
               <div className="space-y-2">
                 {[
                   { value: 'none', label: 'Starting from scratch' },
                   { value: 'partial', label: 'Have some code/prototype' },
                   { value: 'existing', label: 'Have a live site/app to improve' },
-                  { value: 'legacy', label: 'Have legacy code to maintain' }
-                ].map(option => (
+                  { value: 'legacy', label: 'Have legacy code to maintain' },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -470,16 +419,14 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                Your team's technical level
-              </label>
+              <label className="block text-sm font-semibold mb-3">Your team's technical level</label>
               <div className="space-y-2">
                 {[
                   { value: 'non-tech', label: 'Non-technical founder (need full support)' },
-                  { value: 'mixed', label: 'Mixed team (designer + developer)' },
-                  { value: 'strong-dev', label: 'Strong dev team (need help on specific parts)' },
-                  { value: 'enterprise', label: 'Enterprise team' }
-                ].map(option => (
+                  { value: 'mixed', label: 'Mixed team (some technical help)' },
+                  { value: 'strong-dev', label: 'Strong dev team (need targeted help)' },
+                  { value: 'enterprise', label: 'Enterprise team' },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -495,15 +442,13 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">
-                What tech stack do you prefer? (optional)
-              </label>
+              <label className="block text-sm font-semibold mb-2">Preferred tech stack? (optional)</label>
               <input
                 type="text"
                 name="techStack"
                 value={formData.techStack}
                 onChange={handleInputChange}
-                placeholder="e.g., React, Node.js, Python, or leave blank if no preference"
+                placeholder="e.g., Next.js, Shopify, WordPress, or leave blank"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg"
               />
             </div>
@@ -566,16 +511,14 @@ const InquiryForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                Best way to reach you?
-              </label>
+              <label className="block text-sm font-semibold mb-3">Best way to reach you?</label>
               <div className="space-y-2">
                 {[
                   { value: 'email', label: 'Email' },
                   { value: 'phone', label: 'Phone' },
                   { value: 'slack', label: 'Slack' },
-                  { value: 'calendar', label: 'Calendar link' }
-                ].map(option => (
+                  { value: 'calendar', label: 'Calendar link' },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -589,45 +532,45 @@ const InquiryForm = () => {
                 ))}
               </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2">
-                Anything else we should know?
-              </label>
-              <textarea
-                name="additionalInfo"
-                value={formData.additionalInfo}
-                onChange={handleInputChange}
-                placeholder="Share project links, add requirements, describe your vision..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg h-24"
-              />
-            </div>
           </div>
         )}
 
-        {/* SECTION 6: Partner Qualification */}
+        {/* SECTION 6: Partner + Package */}
         {section === 6 && (
           <div className="space-y-6 animate-fadeIn">
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-amber-900 mb-3">Do You Qualify for Our Partner Rate?</h3>
-              <p className="text-amber-800 text-sm mb-4">
-                We offer special pricing for referral partners, early supporters, and established relationships. 
-                Check if you qualify below.
-              </p>
+            <div>
+              <label className="block text-sm font-semibold mb-3">Which package interests you most?</label>
+              <div className="space-y-2">
+                {[
+                  { value: 'starter', label: 'Starter System ($1,500–$2,500)' },
+                  { value: 'growth', label: 'Growth System ($4,000–$6,000)' },
+                  { value: 'retainer', label: 'Automation Retainer ($500–$1,500/mo)' },
+                  { value: 'not-sure', label: "Not sure — let's recommend" },
+                ].map((option) => (
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <input
+                      type="radio"
+                      name="packageInterest"
+                      value={option.value}
+                      checked={formData.packageInterest === option.value}
+                      onChange={handleInputChange}
+                    />
+                    <span className="text-gray-700">{option.label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">
-                How do you know us?
-              </label>
+              <label className="block text-sm font-semibold mb-3">Do you qualify for our partner rate?</label>
               <div className="space-y-2">
                 {[
                   { value: 'none', label: 'First time hearing about us' },
                   { value: 'referral', label: 'Referred by a partner or client' },
                   { value: 'ongoing', label: 'Existing customer or long-term contact' },
                   { value: 'partner', label: 'We discussed a partnership' },
-                  { value: 'community', label: 'Active in our community/network' }
-                ].map(option => (
+                  { value: 'community', label: 'Active in our community/network' },
+                ].map((option) => (
                   <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
                     <input
                       type="radio"
@@ -644,26 +587,26 @@ const InquiryForm = () => {
 
             {(formData.partnerQualification && formData.partnerQualification !== 'none') && (
               <div>
-                <label className="block text-sm font-semibold mb-2">
-                  Tell us more (optional)
-                </label>
+                <label className="block text-sm font-semibold mb-2">Tell us more (optional)</label>
                 <textarea
                   name="partnerDetails"
                   value={formData.partnerDetails}
                   onChange={handleInputChange}
-                  placeholder="Who referred you? What partnership did we discuss? Any context that helps us understand your relationship..."
+                  placeholder="Who referred you? What partnership did we discuss?"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg h-20"
                 />
-                <p className="text-xs text-gray-600 mt-1">
-                  This helps us validate your eligibility for partner pricing.
-                </p>
               </div>
             )}
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-900">
-                <strong>Partner Rate:</strong> $65/hour instead of $125/hour — available to qualified partners, referral sources, and long-term relationships.
-              </p>
+            <div>
+              <label className="block text-sm font-semibold mb-2">Anything else we should know?</label>
+              <textarea
+                name="additionalInfo"
+                value={formData.additionalInfo}
+                onChange={handleInputChange}
+                placeholder="Share project links, competitors, deadlines, or special requirements..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg h-24"
+              />
             </div>
           </div>
         )}
@@ -679,7 +622,7 @@ const InquiryForm = () => {
               ← Back
             </button>
           )}
-          
+
           {section < 6 ? (
             <button
               type="button"
@@ -694,7 +637,7 @@ const InquiryForm = () => {
               disabled={loading}
               className="ml-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
             >
-              {loading ? 'Submitting...' : 'Submit Inquiry'}
+              {loading ? 'Submitting...' : 'Submit Audit Request'}
             </button>
           )}
         </div>

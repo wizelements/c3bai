@@ -75,18 +75,6 @@ const nextConfig = {
     ];
   },
 
-  // Rewrites for clean URLs
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: '/offline',
-          destination: '/offline.jsx'
-        }
-      ]
-    };
-  },
-
   // Image optimization
   images: {
     domains: [],

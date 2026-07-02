@@ -2,8 +2,9 @@ import './globals.css';
 import PWAInstall from './pwa-install';
 
 export const metadata = {
-  title: 'Cod3Black Agency - Web Design, Apps, Software',
-  description: 'Custom web design, mobile apps, and software development. $125/hour transparent pricing. See our work in Beltline Golf, TradeAlerts, Gratog, and more.',
+  title: 'Cod3Black Agency - Done-for-You AI Business Systems',
+  description:
+    'Cod3Black Agency installs websites, funnels, admin dashboards, automations, and AI workflows so small businesses stop manually chasing customers and orders.',
   viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
   manifest: '/manifest.json',
   appleWebApp: {
@@ -15,8 +16,8 @@ export const metadata = {
     telephone: false,
   },
   icons: {
-    icon: '/icon-192x192.png',
-    apple: '/icon-192x192.png',
+    icon: '/icon.svg',
+    apple: '/icon.svg',
   },
 };
 
@@ -30,15 +31,12 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Cod3Black" />
-        <meta name="description" content="Custom web design, mobile apps, and software development. $125/hour transparent pricing." />
-        <link rel="apple-touch-icon" href="/icon-192x192.png" />
-        <link rel="icon" type="image/png" href="/icon-192x192.png" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
       </head>
       <body>
         <PWAInstall />
-        <div className="min-h-screen bg-white">
-          {children}
-        </div>
+        <div className="min-h-screen bg-white">{children}</div>
       </body>
     </html>
   );
