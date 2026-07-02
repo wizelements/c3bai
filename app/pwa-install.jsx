@@ -9,13 +9,11 @@ export default function PWAInstall() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Check if app is already installed
     if (window.navigator.standalone === true) {
       setIsInstalled(true);
       return;
     }
 
-    // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js')
@@ -27,14 +25,12 @@ export default function PWAInstall() {
         });
     }
 
-    // Listen for install prompt
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setShowPrompt(true);
     };
 
-    // Hide prompt if already installed
     const handleAppInstalled = () => {
       setShowPrompt(false);
       setDeferredPrompt(null);
@@ -44,7 +40,6 @@ export default function PWAInstall() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Auto-hide prompt after 10 seconds if not interacted
     const timeout = setTimeout(() => {
       setShowPrompt(false);
     }, 10000);
@@ -73,20 +68,20 @@ export default function PWAInstall() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 md:bottom-4 md:left-4 md:right-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg md:rounded-lg shadow-2xl p-4 z-50 md:max-w-sm animate-in slide-in-from-bottom md:slide-in-from-bottom">
+    <div className="fixed bottom-0 left-0 right-0 md:bottom-4 md:left-4 md:right-auto bg-[#13131f] border border-white/10 text-white rounded-t-lg md:rounded-2xl shadow-2xl p-4 z-50 md:max-w-sm animate-in slide-in-from-bottom">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <Download size={20} className="text-white mt-1 flex-shrink-0" />
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center flex-shrink-0">
+            <Download size={20} className="text-white" />
+          </div>
           <div>
-            <h3 className="font-bold text-base">Install Cod3Black</h3>
-            <p className="text-sm text-blue-100 mt-1">
-              Add to home screen for instant access to our services
-            </p>
+            <h3 className="font-bold text-base text-white">Install Cod3Black</h3>
+            <p className="text-sm text-slate-400 mt-1">Add to home screen for instant access.</p>
           </div>
         </div>
         <button
           onClick={() => setShowPrompt(false)}
-          className="text-blue-100 hover:text-white flex-shrink-0"
+          className="text-slate-400 hover:text-white flex-shrink-0"
         >
           <X size={20} />
         </button>
@@ -94,13 +89,13 @@ export default function PWAInstall() {
       <div className="flex gap-3 mt-4">
         <button
           onClick={handleInstall}
-          className="flex-1 px-4 py-2.5 bg-white text-blue-600 rounded-lg hover:bg-blue-50 font-semibold text-sm transition"
+          className="flex-1 px-4 py-2.5 bg-gradient-to-r from-cyan-400 to-cyan-500 text-[#0a0a0f] rounded-lg font-semibold text-sm transition hover:shadow-[0_0_30px_rgba(34,211,238,0.25)]"
         >
           Install
         </button>
         <button
           onClick={() => setShowPrompt(false)}
-          className="flex-1 px-4 py-2.5 border border-white text-white rounded-lg hover:bg-blue-500 font-semibold text-sm transition"
+          className="flex-1 px-4 py-2.5 border border-white/10 text-slate-300 rounded-lg hover:bg-white/5 font-semibold text-sm transition"
         >
           Later
         </button>

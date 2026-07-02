@@ -24,14 +24,15 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  themeColor: '#0a0a0f',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#2563eb" />
+        <meta name="theme-color" content="#0a0a0f" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -39,9 +40,9 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/icon.svg" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
       </head>
-      <body>
+      <body className="bg-[#0a0a0f] text-slate-200">
         <PWAInstall />
-        <div className="min-h-screen bg-white">{children}</div>
+        {children}
       </body>
     </html>
   );

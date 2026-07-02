@@ -93,29 +93,29 @@ const InquiryForm = () => {
   if (submitted) {
     return (
       <div className="max-w-2xl mx-auto p-6 text-center">
-        <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+        <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
         <h2 className="text-3xl font-bold mb-3">Thanks! We got your audit request.</h2>
-        <p className="text-lg text-gray-600 mb-4">
+        <p className="text-lg text-slate-400 mb-4">
           We'll review your business and recommend the highest-leverage system to build or automate first.
         </p>
 
         {estimate && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6 text-left">
+          <div className="bg-cyan-400/10 border border-cyan-400/20 rounded-lg p-6 mb-6 text-left">
             <h3 className="font-semibold mb-3">Rough estimate based on your answers:</h3>
-            <ul className="space-y-2 text-gray-700">
+            <ul className="space-y-2 text-slate-300">
               <li><strong>Project type:</strong> {estimate.projectTypeLabel}</li>
               <li><strong>Estimated hours:</strong> {estimate.estimatedHours}</li>
               <li><strong>Suggested package:</strong> {estimate.tier}</li>
               <li><strong>Estimated duration:</strong> {estimate.estimatedDuration}</li>
               <li><strong>Monthly system investment:</strong> ${estimate.monthlyRate?.toLocaleString?.() || estimate.monthlyRate}</li>
             </ul>
-            <p className="text-sm text-gray-500 mt-4">{estimate.disclaimer}</p>
+            <p className="text-sm text-slate-500 mt-4">{estimate.disclaimer}</p>
           </div>
         )}
 
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6 text-left">
+        <div className="bg-[#0a0a0f] border border-white/10 rounded-lg p-6 mb-6 text-left">
           <h3 className="font-semibold mb-3">What happens next:</h3>
-          <ol className="space-y-2 text-gray-700">
+          <ol className="space-y-2 text-slate-300">
             <li>✓ <strong>Immediate:</strong> Confirmation email with your estimate</li>
             <li>✓ <strong>Within 24 hours:</strong> We review and recommend the right package</li>
             <li>✓ <strong>Within 48 hours:</strong> We schedule a 15-minute systems call</li>
@@ -134,7 +134,7 @@ const InquiryForm = () => {
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Systems Audit</h1>
-        <p className="text-gray-600 mb-4">
+        <p className="text-slate-400 mb-4">
           Help us understand your business and where a system would save you the most time. Takes about 8 minutes.
         </p>
 
@@ -142,11 +142,11 @@ const InquiryForm = () => {
           {[1, 2, 3, 4, 5, 6].map((num) => (
             <div
               key={num}
-              className={`h-2 flex-1 rounded ${num <= section ? 'bg-blue-600' : 'bg-gray-200'}`}
+              className={`h-2 flex-1 rounded ${num <= section ? 'bg-blue-600' : 'bg-white/10'}`}
             />
           ))}
         </div>
-        <p className="text-sm text-gray-600 mt-2">Section {section} of 6</p>
+        <p className="text-sm text-slate-400 mt-2">Section {section} of 6</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -161,7 +161,7 @@ const InquiryForm = () => {
                 value={formData.projectName}
                 onChange={handleInputChange}
                 placeholder="e.g., Taste of Gratitude, Atlanta Saddle Club"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-3 border border-white/10 rounded-lg"
                 required
               />
             </div>
@@ -178,7 +178,7 @@ const InquiryForm = () => {
                   { value: 'mvp', label: 'MVP (prove a new product idea fast)' },
                   { value: 'other', label: 'Something else' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="projectType"
@@ -186,7 +186,7 @@ const InquiryForm = () => {
                       checked={formData.projectType === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -199,7 +199,7 @@ const InquiryForm = () => {
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="What do you sell? Who do you serve? How do customers find you today?"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg h-24"
+                className="w-full px-4 py-3 border border-white/10 rounded-lg h-24"
                 required
               />
             </div>
@@ -212,7 +212,7 @@ const InquiryForm = () => {
                 value={formData.problemStatement}
                 onChange={handleInputChange}
                 placeholder="e.g., I spend 3 hours/day answering booking DMs"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-3 border border-white/10 rounded-lg"
                 required
               />
             </div>
@@ -231,7 +231,7 @@ const InquiryForm = () => {
                   { value: 'custom', label: 'Fully custom design (unique identity)' },
                   { value: 'unsure', label: "Not sure yet" },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="designScope"
@@ -239,7 +239,7 @@ const InquiryForm = () => {
                       checked={formData.designScope === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -254,7 +254,7 @@ const InquiryForm = () => {
                   { value: 'complex', label: 'Complex (accounts, real-time data, reports)' },
                   { value: 'unsure', label: "Not sure yet" },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="databaseNeeded"
@@ -262,7 +262,7 @@ const InquiryForm = () => {
                       checked={formData.databaseNeeded === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -278,7 +278,7 @@ const InquiryForm = () => {
                   { value: '5-plus', label: '5+ integrations' },
                   { value: 'unsure', label: "Not sure yet" },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="integrationCount"
@@ -286,7 +286,7 @@ const InquiryForm = () => {
                       checked={formData.integrationCount === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -301,14 +301,14 @@ const InquiryForm = () => {
                   { value: 'android', label: 'Android app' },
                   { value: 'both-mobile', label: 'Both iOS & Android' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="checkbox"
                       value={option.value}
                       checked={formData.deploymentRequirements.includes(option.value)}
                       onChange={(e) => handleCheckboxChange(e, 'deploymentRequirements')}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -324,14 +324,14 @@ const InquiryForm = () => {
                   { value: 'training', label: 'Training/Documentation' },
                   { value: 'none', label: 'None listed' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="checkbox"
                       value={option.value}
                       checked={formData.specialRequirements.includes(option.value)}
                       onChange={(e) => handleCheckboxChange(e, 'specialRequirements')}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -352,7 +352,7 @@ const InquiryForm = () => {
                   { value: '4-weeks', label: '4 weeks' },
                   { value: 'urgent', label: 'ASAP (2-3 weeks)' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="timeline"
@@ -360,7 +360,7 @@ const InquiryForm = () => {
                       checked={formData.timeline === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -376,7 +376,7 @@ const InquiryForm = () => {
                   { value: '50k-plus', label: '$50,000+' },
                   { value: 'unsure', label: "Not sure yet" },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="budgetExpectation"
@@ -384,7 +384,7 @@ const InquiryForm = () => {
                       checked={formData.budgetExpectation === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -404,7 +404,7 @@ const InquiryForm = () => {
                   { value: 'existing', label: 'Have a live site/app to improve' },
                   { value: 'legacy', label: 'Have legacy code to maintain' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="existingCode"
@@ -412,7 +412,7 @@ const InquiryForm = () => {
                       checked={formData.existingCode === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -427,7 +427,7 @@ const InquiryForm = () => {
                   { value: 'strong-dev', label: 'Strong dev team (need targeted help)' },
                   { value: 'enterprise', label: 'Enterprise team' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="teamLevel"
@@ -435,7 +435,7 @@ const InquiryForm = () => {
                       checked={formData.teamLevel === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -449,7 +449,7 @@ const InquiryForm = () => {
                 value={formData.techStack}
                 onChange={handleInputChange}
                 placeholder="e.g., Next.js, Shopify, WordPress, or leave blank"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-3 border border-white/10 rounded-lg"
               />
             </div>
           </div>
@@ -467,7 +467,7 @@ const InquiryForm = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Your name"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 border border-white/10 rounded-lg"
                   required
                 />
               </div>
@@ -479,7 +479,7 @@ const InquiryForm = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="your@email.com"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 border border-white/10 rounded-lg"
                   required
                 />
               </div>
@@ -494,7 +494,7 @@ const InquiryForm = () => {
                   value={formData.company}
                   onChange={handleInputChange}
                   placeholder="Your company"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 border border-white/10 rounded-lg"
                 />
               </div>
               <div>
@@ -505,7 +505,7 @@ const InquiryForm = () => {
                   value={formData.website}
                   onChange={handleInputChange}
                   placeholder="https://..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 border border-white/10 rounded-lg"
                 />
               </div>
             </div>
@@ -519,7 +519,7 @@ const InquiryForm = () => {
                   { value: 'slack', label: 'Slack' },
                   { value: 'calendar', label: 'Calendar link' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="contactMethod"
@@ -527,7 +527,7 @@ const InquiryForm = () => {
                       checked={formData.contactMethod === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -547,7 +547,7 @@ const InquiryForm = () => {
                   { value: 'retainer', label: 'Automation Retainer ($500–$1,500/mo)' },
                   { value: 'not-sure', label: "Not sure — let's recommend" },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="packageInterest"
@@ -555,7 +555,7 @@ const InquiryForm = () => {
                       checked={formData.packageInterest === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -571,7 +571,7 @@ const InquiryForm = () => {
                   { value: 'partner', label: 'We discussed a partnership' },
                   { value: 'community', label: 'Active in our community/network' },
                 ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                  <label key={option.value} className="flex items-center gap-3 p-2 hover:bg-[#0a0a0f] rounded cursor-pointer">
                     <input
                       type="radio"
                       name="partnerQualification"
@@ -579,7 +579,7 @@ const InquiryForm = () => {
                       checked={formData.partnerQualification === option.value}
                       onChange={handleInputChange}
                     />
-                    <span className="text-gray-700">{option.label}</span>
+                    <span className="text-slate-300">{option.label}</span>
                   </label>
                 ))}
               </div>
@@ -593,7 +593,7 @@ const InquiryForm = () => {
                   value={formData.partnerDetails}
                   onChange={handleInputChange}
                   placeholder="Who referred you? What partnership did we discuss?"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg h-20"
+                  className="w-full px-4 py-3 border border-white/10 rounded-lg h-20"
                 />
               </div>
             )}
@@ -605,7 +605,7 @@ const InquiryForm = () => {
                 value={formData.additionalInfo}
                 onChange={handleInputChange}
                 placeholder="Share project links, competitors, deadlines, or special requirements..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg h-24"
+                className="w-full px-4 py-3 border border-white/10 rounded-lg h-24"
               />
             </div>
           </div>
@@ -617,7 +617,7 @@ const InquiryForm = () => {
             <button
               type="button"
               onClick={prevSection}
-              className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-3 border border-white/10 rounded-lg hover:bg-[#0a0a0f]"
             >
               ← Back
             </button>
@@ -635,7 +635,7 @@ const InquiryForm = () => {
             <button
               type="submit"
               disabled={loading}
-              className="ml-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+              className="ml-auto px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400"
             >
               {loading ? 'Submitting...' : 'Submit Audit Request'}
             </button>

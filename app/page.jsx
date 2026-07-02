@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import {
-  ExternalLink,
   ArrowRight,
   Check,
   Zap,
@@ -10,6 +9,10 @@ import {
   Mail,
   BarChart3,
   Bot,
+  Sparkles,
+  TrendingUp,
+  Users,
+  ExternalLink,
 } from 'lucide-react';
 import InquiryForm from './inquiry-form';
 
@@ -35,7 +38,7 @@ const projects = [
     description:
       'Survey-driven brand funnel that qualifies leads and routes them into the right offer automatically.',
     stats: ['Lead qualification', 'Auto-routing', 'Brand system'],
-    url: '#',
+    url: '/docs/projects',
     tags: ['Funnel', 'Automation', 'Brand'],
   },
   {
@@ -87,8 +90,6 @@ const packages = [
       'Basic automation (1–2 flows)',
       '30 days of support',
     ],
-    cta: 'Get a Starter Quote',
-    href: '/services',
     highlighted: false,
   },
   {
@@ -101,10 +102,10 @@ const packages = [
       'Custom admin dashboard',
       'Payments or booking checkout',
       '3–5 automations + 1 AI workflow',
+      'Customer/member/orders database',
+      'Analytics + conversion tracking setup',
       '90 days of support',
     ],
-    cta: 'Get a Growth Quote',
-    href: '/services',
     highlighted: true,
   },
   {
@@ -119,249 +120,289 @@ const packages = [
       'Priority bug fixes',
       'Quarterly strategy review',
     ],
-    cta: 'Start a Retainer',
-    href: '/services',
     highlighted: false,
   },
 ];
 
-export default function Home() {
+const socialProof = [
+  { number: '4+', label: 'Systems shipped' },
+  { number: '$0', label: 'Starting infra cost' },
+  { number: '24h', label: 'First response' },
+];
+
+function Nav() {
   return (
-    <>
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-            <Zap size={28} className="text-blue-600" />
-            Cod3Black
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0a0a0f]/80 backdrop-blur-xl">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+        <Link href="/" className="text-xl font-bold tracking-tight flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center">
+            <Zap size={18} className="text-white" />
+          </div>
+          <span className="text-white group-hover:text-cyan-300 transition">Cod3Black</span>
+        </Link>
+        <div className="hidden md:flex gap-8 text-sm font-medium">
+          <a href="#systems" className="text-slate-400 hover:text-white transition">Systems</a>
+          <a href="#projects" className="text-slate-400 hover:text-white transition">Projects</a>
+          <Link href="/services" className="text-slate-400 hover:text-white transition">Services</Link>
+          <a
+            href="#inquiry"
+            className="px-4 py-2 bg-white text-[#0a0a0f] rounded-lg hover:bg-cyan-300 transition font-semibold"
+          >
+            Get Started
+          </a>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0f] pt-24 pb-16 px-4 sm:px-6">
+      <div className="absolute inset-0 bg-grid opacity-50"></div>
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse-glow"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-500/15 rounded-full blur-[120px] animate-pulse-glow"></div>
+
+      <div className="relative max-w-5xl mx-auto text-center">
+        <div className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full glass text-sm font-medium text-cyan-300">
+          <Sparkles size={16} />
+          Done-for-you AI business systems
+        </div>
+
+        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight mb-8 leading-[1.05]">
+          Stop manually
+          <br />
+          <span className="text-gradient">chasing customers.</span>
+        </h1>
+
+        <p className="text-lg sm:text-xl mb-12 text-slate-400 max-w-2xl mx-auto leading-relaxed">
+          Cod3Black Agency installs the website, funnel, admin dashboard, automation, and AI workflow that lets your business capture leads, take orders, and manage operations while you sleep.
+        </p>
+
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+          <a
+            href="#inquiry"
+            className="px-8 py-4 bg-gradient-to-r from-cyan-400 to-cyan-500 text-[#0a0a0f] font-bold rounded-xl hover:shadow-[0_0_40px_rgba(34,211,238,0.35)] transition inline-flex items-center justify-center gap-2"
+          >
+            Get Your Free Systems Audit <ArrowRight size={20} />
+          </a>
+          <Link
+            href="/services"
+            className="px-8 py-4 border border-white/20 text-white font-semibold rounded-xl hover:bg-white/5 transition inline-flex items-center justify-center gap-2"
+          >
+            See Packages
           </Link>
-          <div className="hidden md:flex gap-8 text-sm font-medium">
-            <a href="#systems" className="text-gray-700 hover:text-blue-600 transition">Systems</a>
-            <a href="#projects" className="text-gray-700 hover:text-blue-600 transition">Projects</a>
-            <Link href="/services" className="text-gray-700 hover:text-blue-600 transition">Services</Link>
-            <a href="#inquiry" className="text-gray-700 hover:text-blue-600 transition">Get Started</a>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-16">
+          {packages.map((pkg) => (
+            <div
+              key={pkg.name}
+              className={`glass-card rounded-xl p-5 text-left ${pkg.highlighted ? 'ring-1 ring-cyan-400/40' : ''}`}
+            >
+              <div className="text-xs text-slate-400 mb-1">{pkg.name}</div>
+              <div className="text-lg font-bold text-white mb-1">{pkg.price}</div>
+              <div className="text-xs text-slate-500 line-clamp-2">{pkg.description}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-center gap-12">
+          {socialProof.map((item) => (
+            <div key={item.label} className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold text-white">{item.number}</div>
+              <div className="text-sm text-slate-500">{item.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SystemsSection() {
+  return (
+    <section id="systems" className="py-28 px-4 sm:px-6 bg-[#0a0a0f] relative">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-5 tracking-tight">The systems we install</h2>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            We don't just build websites. We build connected systems that run your business.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {systems.map((system, idx) => {
+            const Icon = system.icon;
+            return (
+              <div
+                key={idx}
+                className="glass-card rounded-2xl p-8 hover:border-cyan-400/30 hover:bg-white/[0.04] transition group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center mb-5 ring-1 ring-white/10">
+                  <Icon className="w-6 h-6 text-cyan-300" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">{system.title}</h3>
+                <p className="text-slate-400 leading-relaxed">{system.description}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProjectsSection() {
+  return (
+    <section id="projects" className="py-28 px-4 sm:px-6 bg-[#0a0a0f] relative">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-5 tracking-tight">Real systems we've built</h2>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            Proof of work for food brands, nonprofits, service providers, and creators.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
+          {projects.map((project, idx) => {
+            const isExternal = project.url.startsWith('http');
+            return (
+              <a
+                key={idx}
+                href={project.url}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
+                className="group glass-card rounded-2xl p-8 hover:border-cyan-400/30 hover:bg-white/[0.04] transition"
+              >
+                <div className="flex justify-between items-start mb-5">
+                  <h3 className="text-2xl font-bold text-white group-hover:text-cyan-300 transition">
+                    {project.name}
+                  </h3>
+                  {isExternal && (
+                    <ExternalLink size={18} className="text-slate-500 group-hover:text-cyan-300 transition" />
+                  )}
+                </div>
+
+                <p className="text-slate-400 mb-6 line-clamp-2">{project.description}</p>
+
+                <div className="space-y-2.5 mb-6">
+                  {project.stats.map((stat, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
+                      <Check size={16} className="text-cyan-400 flex-shrink-0" />
+                      <span className="font-medium">{stat}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {project.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 bg-white/5 text-slate-300 text-xs font-medium rounded-full ring-1 ring-white/10"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </a>
+            );
+          })}
+        </div>
+
+        <div className="text-center">
+          <Link
+            href="/docs/projects"
+            className="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 font-semibold text-lg"
+          >
+            Read full case studies <ArrowRight size={20} />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InquirySection() {
+  return (
+    <section id="inquiry" className="py-28 px-4 sm:px-6 bg-[#0a0a0f] relative">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-14">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full glass text-sm font-medium text-cyan-300">
+            <TrendingUp size={16} />
+            Free systems audit
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-5 tracking-tight">Get your free systems audit</h2>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            Tell us about your business. We'll identify the highest-leverage system to build or automate first.
+          </p>
+        </div>
+
+        <div className="glass-card rounded-2xl p-2">
+          <div className="bg-[#0a0a0f] rounded-xl p-6 sm:p-10">
+            <InquiryForm />
           </div>
         </div>
-      </nav>
+      </div>
+    </section>
+  );
+}
 
-      <main className="min-h-screen">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 text-white pt-20 pb-32 px-4 sm:px-6">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400 rounded-full opacity-10 blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400 rounded-full opacity-10 blur-3xl"></div>
-          </div>
-
-          <div className="relative max-w-5xl mx-auto text-center">
-            <div className="inline-block mb-6 px-4 py-2 bg-blue-500 bg-opacity-30 border border-blue-300 rounded-full text-sm font-semibold">
-              Done-for-you AI business systems
+function Footer() {
+  return (
+    <footer className="bg-[#0a0a0f] border-t border-white/10 py-16 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-4 gap-10 mb-12">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center">
+                <Zap size={18} className="text-white" />
+              </div>
+              <span className="text-xl font-bold text-white">Cod3Black</span>
             </div>
-
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
-              Stop Manually Chasing Customers
-            </h1>
-
-            <p className="text-lg sm:text-xl mb-12 text-blue-100 max-w-3xl mx-auto leading-relaxed">
-              Cod3Black Agency installs the website, funnel, admin dashboard, automation, and AI workflow that lets your business capture leads, take orders, and manage operations while you sleep.
+            <p className="text-slate-400 max-w-sm">
+              Done-for-you AI business systems for small businesses, creators, and local brands.
             </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-              <a
-                href="#inquiry"
-                className="px-8 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition shadow-lg inline-flex items-center justify-center gap-2"
-              >
-                Get Your Free Systems Audit <ArrowRight size={20} />
-              </a>
-              <Link
-                href="/services"
-                className="px-8 py-4 border-2 border-white text-white font-bold rounded-lg hover:bg-blue-500 transition inline-flex items-center justify-center gap-2"
-              >
-                See Packages <ExternalLink size={20} />
-              </Link>
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              {packages.map((pkg) => (
-                <div
-                  key={pkg.name}
-                  className={`bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-20 hover:border-opacity-40 transition ${pkg.highlighted ? 'ring-2 ring-yellow-400 ring-opacity-50' : ''}`}
-                >
-                  <div className="text-xs text-blue-200 mb-2">{pkg.name}</div>
-                  <div className="text-3xl font-bold mb-2">{pkg.price}</div>
-                  <div className="text-sm text-blue-100">{pkg.description}</div>
-                </div>
-              ))}
-            </div>
           </div>
-        </section>
-
-        {/* Systems We Install */}
-        <section id="systems" className="py-24 px-4 sm:px-6 bg-gray-50">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">The Systems We Install</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                We don't just build websites. We build the connected systems that run your business.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {systems.map((system, idx) => {
-                const Icon = system.icon;
-                return (
-                  <div
-                    key={idx}
-                    className="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition border border-gray-200"
-                  >
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                      <Icon className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{system.title}</h3>
-                    <p className="text-gray-600">{system.description}</p>
-                  </div>
-                );
-              })}
-            </div>
+          <div>
+            <h5 className="text-white font-semibold mb-4">Quick Links</h5>
+            <ul className="space-y-3 text-sm text-slate-400">
+              <li><a href="#systems" className="hover:text-cyan-300 transition">Systems</a></li>
+              <li><a href="#projects" className="hover:text-cyan-300 transition">Projects</a></li>
+              <li><Link href="/services" className="hover:text-cyan-300 transition">Services</Link></li>
+              <li><a href="#inquiry" className="hover:text-cyan-300 transition">Get Started</a></li>
+            </ul>
           </div>
-        </section>
-
-        {/* Projects Section */}
-        <section id="projects" className="py-24 px-4 sm:px-6 bg-white">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Real Systems We've Built</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Proof of work for food brands, nonprofits, service providers, and creators.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              {projects.map((project, idx) => (
-                <a
-                  key={idx}
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-blue-600 hover:shadow-xl transition cursor-pointer"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition">
-                      {project.name}
-                    </h3>
-                    {project.url !== '#' && (
-                      <ExternalLink size={20} className="text-gray-400 group-hover:text-blue-600 transition" />
-                    )}
-                  </div>
-
-                  <p className="text-gray-600 mb-6 line-clamp-2">{project.description}</p>
-
-                  <div className="space-y-3 mb-6">
-                    {project.stats.map((stat, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
-                        <Check size={16} className="text-green-600 flex-shrink-0" />
-                        <span className="font-medium">{stat}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </a>
-              ))}
-            </div>
-
-            <div className="text-center">
-              <Link
-                href="/docs/projects"
-                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold text-lg"
-              >
-                Read Full Case Studies <ArrowRight size={20} />
-              </Link>
-            </div>
+          <div>
+            <h5 className="text-white font-semibold mb-4">Resources</h5>
+            <ul className="space-y-3 text-sm text-slate-400">
+              <li><Link href="/docs/web-design" className="hover:text-cyan-300 transition">Web Design</Link></li>
+              <li><Link href="/docs/mobile-apps" className="hover:text-cyan-300 transition">Mobile Apps</Link></li>
+              <li><Link href="/docs/projects" className="hover:text-cyan-300 transition">Case Studies</Link></li>
+            </ul>
           </div>
-        </section>
+        </div>
 
-        {/* Inquiry Form Section */}
-        <section id="inquiry" className="py-24 px-4 sm:px-6 bg-gray-50">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Get Your Free Systems Audit</h2>
-              <p className="text-lg text-gray-600">
-                Tell us about your business. We'll identify the highest-leverage system to build or automate first.
-              </p>
-            </div>
-            <div className="bg-white rounded-xl shadow-lg p-8 sm:p-12">
-              <InquiryForm />
-            </div>
-          </div>
-        </section>
+        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-slate-500">© 2026 Cod3Black Agency. All rights reserved.</p>
+          <a href="mailto:hello@c3bai.com" className="text-sm text-cyan-300 hover:text-cyan-200 transition">hello@c3bai.com</a>
+        </div>
+      </div>
+    </footer>
+  );
+}
 
-        {/* Footer */}
-        <footer className="bg-gray-900 text-gray-300 py-12 px-4 sm:px-6">
-          <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-4 gap-8 mb-12">
-              <div>
-                <h4 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
-                  <Zap size={20} className="text-blue-400" />
-                  Cod3Black
-                </h4>
-                <p className="text-sm text-gray-400">Done-for-you AI business systems for small businesses and creators.</p>
-              </div>
-              <div>
-                <h5 className="text-white font-semibold mb-4">Quick Links</h5>
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <a href="#systems" className="text-gray-400 hover:text-white transition">Systems</a>
-                  </li>
-                  <li>
-                    <a href="#projects" className="text-gray-400 hover:text-white transition">Projects</a>
-                  </li>
-                  <li>
-                    <Link href="/services" className="text-gray-400 hover:text-white transition">Services</Link>
-                  </li>
-                  <li>
-                    <a href="#inquiry" className="text-gray-400 hover:text-white transition">Get Started</a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="text-white font-semibold mb-4">Resources</h5>
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <Link href="/docs/web-design" className="text-gray-400 hover:text-white transition">Web Design</Link>
-                  </li>
-                  <li>
-                    <Link href="/docs/mobile-apps" className="text-gray-400 hover:text-white transition">Mobile Apps</Link>
-                  </li>
-                  <li>
-                    <Link href="/docs/projects" className="text-gray-400 hover:text-white transition">Case Studies</Link>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="text-white font-semibold mb-4">Contact</h5>
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <a href="mailto:hello@c3bai.com" className="text-blue-400 hover:text-blue-300 transition">hello@c3bai.com</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-              <p>© 2026 Cod3Black Agency. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
-      </main>
-    </>
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-[#0a0a0f]">
+      <Nav />
+      <Hero />
+      <SystemsSection />
+      <ProjectsSection />
+      <InquirySection />
+      <Footer />
+    </div>
   );
 }
