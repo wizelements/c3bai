@@ -12,7 +12,8 @@
 - ✅ Added `/api/admin/login`, `/api/admin/logout`, `/api/admin/inquiries` API routes
 - ✅ Added `jsconfig.json` for `@/` path aliases
 - ✅ Fixed PWA offline route for App Router
-- ✅ Pushed to GitHub `master` (commit `215ea0c`)
+- ✅ **Redesigned visual identity: premium dark theme, cyan/purple gradient brand, glass cards, improved typography**
+- ✅ Pushed to GitHub `master` (latest commit `a5d3bc9`)
 - ✅ Deployed to Vercel production: `https://c3bai-nu.vercel.app`
 - ✅ Verified build passes with no errors and no viewport warnings
 - ✅ Verified `/api/inquiry` returns estimate without crashing when DB/email are not configured
@@ -21,9 +22,9 @@
 
 | Check | URL | Status |
 |-------|-----|--------|
-| Homepage | https://c3bai-nu.vercel.app | ✅ Loads with new positioning |
-| Services | https://c3bai-nu.vercel.app/services | ✅ Packages rendered |
-| Admin login | https://c3bai-nu.vercel.app/admin/login | ✅ Login form rendered |
+| Homepage | https://c3bai-nu.vercel.app | ✅ Dark premium theme, new hero, systems, projects |
+| Services | https://c3bai-nu.vercel.app/services | ✅ Packages rendered with new visual design |
+| Admin login | https://c3bai-nu.vercel.app/admin/login | ✅ Dark login form rendered |
 | Inquiry API | POST /api/inquiry | ✅ Returns estimate, gracefully degrades |
 
 ## What's needed next
@@ -79,6 +80,6 @@ ADMIN_SECRET=change-me-to-another-long-random-string
 - `app/api/admin/*` — admin API routes
 - `lib/db.js`, `lib/resend.js`, `lib/auth.js`, `lib/env.js` — backend helpers
 - `jsconfig.json` — path aliases
-- `public/icon.svg`, `public/manifest.json` — PWA assets
+- `public/icon.svg`, `public/manifest.json` — PWA assets (dark brand)
 - `docs/PROJECTS_DEEP_DIVE.md` — real case studies
 - `README.md`, `.env.example`, `.gitignore`
