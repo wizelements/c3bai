@@ -123,7 +123,7 @@ const InquiryForm = () => {
           </ol>
         </div>
 
-        <a href="/" className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <a href="/" className="inline-block px-6 py-3 bg-cyan-400 text-white rounded-lg hover:bg-cyan-500">
           Back to Home
         </a>
       </div>
@@ -142,7 +142,7 @@ const InquiryForm = () => {
           {[1, 2, 3, 4, 5, 6].map((num) => (
             <div
               key={num}
-              className={`h-2 flex-1 rounded ${num <= section ? 'bg-blue-600' : 'bg-white/10'}`}
+              className={`h-2 flex-1 rounded ${num <= section ? 'bg-cyan-400' : 'bg-white/10'}`}
             />
           ))}
         </div>
@@ -627,7 +627,7 @@ const InquiryForm = () => {
             <button
               type="button"
               onClick={nextSection}
-              className="ml-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+              className="ml-auto px-6 py-3 bg-cyan-400 text-white rounded-lg hover:bg-cyan-500 flex items-center gap-2"
             >
               Next <ArrowRight size={18} />
             </button>
