@@ -5,7 +5,6 @@ export const metadata = {
   title: 'Cod3Black Agency - Done-for-You AI Business Systems',
   description:
     'Cod3Black Agency installs websites, funnels, admin dashboards, automations, and AI workflows so small businesses stop manually chasing customers and orders.',
-  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -19,6 +18,12 @@ export const metadata = {
     icon: '/icon.svg',
     apple: '/icon.svg',
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }) {
