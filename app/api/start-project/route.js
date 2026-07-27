@@ -1,4 +1,4 @@
-import { insertProjectRequest, getProjectRequestsByEmail } from '@/lib/db';
+import { insertProjectRequest, getProjectRequestsByEmail, insertAuditLog } from '@/lib/db';
 import { sendProjectRequestNotifications } from '@/lib/resend';
 import { z } from 'zod';
 
@@ -59,6 +59,19 @@ export async function POST(request) {
     // Save to database first — source of truth
     const dbResult = await insertProjectRequest(formData);
     const requestId = dbResult.success ? dbResult.id : null;
+
+    // Audit log the lead capture
+    if (requestId) {
+      await insertAuditLog({
+        eventType: 'lead.captured',
+        entityType: 'project_request',
+        entityId: requestId,
+        actor: 'system',
+        summary: `New lead: ${formData.name} — ${formData.projectName}`,
+        detailsJson: JSON.stringify({ email: formData.email, source: formData.source, projectType: formData.projectType }),
+        severity: 'info',
+      }).catch((err) => console.error('[audit] Failed to log lead capture:', err));
+    }
 
     if (!dbResult.success && dbResult.reason !== 'not_configured') {
       console.error('[api/start-project] Database insert failed:', dbResult.error);

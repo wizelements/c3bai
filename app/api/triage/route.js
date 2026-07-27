@@ -1,4 +1,4 @@
-import { getProjectRequestById, updateProjectRequestQualification, updateProjectRequestFollowUp } from '@/lib/db';
+import { getProjectRequestById, updateProjectRequestQualification, updateProjectRequestFollowUp, insertAuditLog } from '@/lib/db';
 
 /**
  * POST /api/triage
@@ -216,6 +216,17 @@ export async function POST(request) {
     if (followUpDraft) {
       await updateProjectRequestFollowUp(requestId, followUpDraft);
     }
+
+    // Audit log
+    await insertAuditLog({
+      eventType: 'lead.triaged',
+      entityType: 'project_request',
+      entityId: requestId,
+      actor: 'system',
+      summary: `Triage: ${projectRequest.name} — ${triage.qualificationStatus} (${triage.technicalComplexity} complexity, ${triage.businessValue} value)`,
+      detailsJson: JSON.stringify({ qualificationStatus: triage.qualificationStatus, complexity: triage.technicalComplexity, value: triage.businessValue, risk: triage.deliveryRisk }),
+      severity: 'info',
+    }).catch((err) => console.error('[audit] Failed to log triage:', err));
 
     return Response.json({
       success: true,
