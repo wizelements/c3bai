@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Zap, ArrowRight, Loader2, RefreshCw, Mail, CheckCircle, AlertCircle, Clock, ExternalLink } from 'lucide-react';
+import { Zap, ArrowRight, Loader2, RefreshCw, Mail, CheckCircle, AlertCircle, Clock, ExternalLink, FileText, Send, ThumbsUp, XCircle, Brain } from 'lucide-react';
 
 const qualificationColors = {
   NEW: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/20',
@@ -59,6 +59,10 @@ export default function AdminRequestsPage() {
   const [qualFilter, setQualFilter] = useState('all');
   const [selected, setSelected] = useState(null);
   const [updating, setUpdating] = useState(null);
+  const [triaging, setTriaging] = useState(null);
+  const [triageResult, setTriageResult] = useState(null);
+  const [followUpAction, setFollowUpAction] = useState(null);
+  const [followUpMsg, setFollowUpMsg] = useState(null);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -103,6 +107,68 @@ export default function AdminRequestsPage() {
       console.error('Update failed:', err);
     } finally {
       setUpdating(null);
+    }
+  };
+
+  const runTriage = async (id) => {
+    setTriaging(id);
+    setTriageResult(null);
+    setFollowUpMsg(null);
+    try {
+      const res = await fetch('/api/triage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId: id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTriageResult(data);
+        // Refresh the list to show updated qualification
+        const refresh = await fetch('/api/admin/requests');
+        const refreshData = await refresh.json();
+        if (refreshData.success) {
+          setRequests(refreshData.data || []);
+        }
+      } else {
+        setFollowUpMsg({ type: 'error', text: data.error || 'Triage failed' });
+      }
+    } catch (err) {
+      setFollowUpMsg({ type: 'error', text: 'Network error during triage' });
+    } finally {
+      setTriaging(null);
+    }
+  };
+
+  const runFollowUpAction = async (id, action) => {
+    setFollowUpAction(id + ':' + action);
+    setFollowUpMsg(null);
+    try {
+      const res = await fetch('/api/follow-up', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId: id, action }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFollowUpMsg({ type: 'success', text: data.message || `${action} successful` });
+        // Refresh
+        const refresh = await fetch('/api/admin/requests');
+        const refreshData = await refresh.json();
+        if (refreshData.success) {
+          setRequests(refreshData.data || []);
+        }
+        if (data.draft) {
+          setRequests((prev) =>
+            prev.map((r) => (r.id === id ? { ...r, follow_up_draft: data.draft } : r))
+          );
+        }
+      } else {
+        setFollowUpMsg({ type: 'error', text: data.error || `${action} failed` });
+      }
+    } catch (err) {
+      setFollowUpMsg({ type: 'error', text: 'Network error' });
+    } finally {
+      setFollowUpAction(null);
     }
   };
 
@@ -333,6 +399,149 @@ export default function AdminRequestsPage() {
                         </div>
                       )}
 
+                      {/* Triage section */}
+                      <div className="mb-5 pt-4 border-t border-white/5">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                            <Brain size={12} className="inline mr-1" />
+                            Triage & Qualification
+                          </h3>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); runTriage(req.id); }}
+                            disabled={triaging === req.id}
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-400/10 border border-cyan-400/20 text-cyan-300 hover:bg-cyan-400/20 transition disabled:opacity-50 flex items-center gap-1.5"
+                          >
+                            {triaging === req.id ? (
+                              <><Loader2 size={12} className="animate-spin" /> Analyzing...</>
+                            ) : (
+                              <><Brain size={12} /> Run triage</>
+                            )}
+                          </button>
+                        </div>
+
+                        {req.triage_summary && (
+                          <div className="bg-white/[0.03] rounded-lg p-3 mb-3">
+                            <p className="text-sm text-slate-300">{req.triage_summary}</p>
+                          </div>
+                        )}
+
+                        {req.triage_json && (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                            {(() => {
+                              try {
+                                const t = JSON.parse(req.triage_json);
+                                return Object.entries(t).map(([key, val]) => {
+                                  if (Array.isArray(val) && val.length > 0) {
+                                    return (
+                                      <div key={key} className="bg-white/[0.03] rounded-lg p-2">
+                                        <span className="text-slate-500 block mb-0.5">{formatKey(key)}</span>
+                                        <ul className="text-slate-300 list-disc list-inside">
+                                          {val.slice(0, 3).map((v, i) => <li key={i}>{v}</li>)}
+                                          {val.length > 3 && <li className="text-slate-500">+{val.length - 3} more</li>}
+                                        </ul>
+                                      </div>
+                                    );
+                                  }
+                                  if (typeof val === 'string' && val) {
+                                    return (
+                                      <div key={key} className="bg-white/[0.03] rounded-lg p-2">
+                                        <span className="text-slate-500 block mb-0.5">{formatKey(key)}</span>
+                                        <span className="text-slate-200">{val}</span>
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                });
+                              } catch { return null; }
+                            })()}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Follow-up section */}
+                      <div className="mb-5 pt-4 border-t border-white/5">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                            <Mail size={12} className="inline mr-1" />
+                            Follow-up
+                          </h3>
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); runFollowUpAction(req.id, 'draft'); }}
+                              disabled={followUpAction === req.id + ':draft'}
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 transition disabled:opacity-50 flex items-center gap-1"
+                              title="Generate draft"
+                            >
+                              {followUpAction === req.id + ':draft' ? <Loader2 size={11} className="animate-spin" /> : <FileText size={11} />}
+                              Draft
+                            </button>
+                            {req.follow_up_draft && req.follow_up_approved === 0 && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); runFollowUpAction(req.id, 'approve'); }}
+                                disabled={followUpAction === req.id + ':approve'}
+                                className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-green-400/10 border border-green-400/20 text-green-300 hover:bg-green-400/20 transition disabled:opacity-50 flex items-center gap-1"
+                                title="Approve draft"
+                              >
+                                {followUpAction === req.id + ':approve' ? <Loader2 size={11} className="animate-spin" /> : <ThumbsUp size={11} />}
+                                Approve
+                              </button>
+                            )}
+                            {req.follow_up_approved === 1 && req.follow_up_sent === 0 && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); runFollowUpAction(req.id, 'send'); }}
+                                disabled={followUpAction === req.id + ':send'}
+                                className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-cyan-400/10 border border-cyan-400/20 text-cyan-300 hover:bg-cyan-400/20 transition disabled:opacity-50 flex items-center gap-1"
+                                title="Mark as sent"
+                              >
+                                {followUpAction === req.id + ':send' ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
+                                Send
+                              </button>
+                            )}
+                            {req.follow_up_sent === 1 && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); runFollowUpAction(req.id, 'resend'); }}
+                                disabled={followUpAction === req.id + ':resend'}
+                                className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-yellow-400/10 border border-yellow-400/20 text-yellow-300 hover:bg-yellow-400/20 transition disabled:opacity-50 flex items-center gap-1"
+                                title="Reset to resend"
+                              >
+                                {followUpAction === req.id + ':resend' ? <Loader2 size={11} className="animate-spin" /> : <RefreshCw size={11} />}
+                                Resend
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {followUpMsg && (
+                          <div className={`mb-3 px-3 py-2 rounded-lg text-xs ${
+                            followUpMsg.type === 'success'
+                              ? 'bg-green-400/5 border border-green-400/10 text-green-300'
+                              : 'bg-red-400/5 border border-red-400/10 text-red-300'
+                          }`}>
+                            {followUpMsg.text}
+                          </div>
+                        )}
+
+                        {req.follow_up_draft && (
+                          <div className="bg-white/[0.03] border border-white/5 rounded-lg p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs text-slate-500">
+                                {req.follow_up_approved === 1
+                                  ? req.follow_up_sent === 1
+                                    ? '✓ Sent'
+                                    : '✓ Approved — ready to send'
+                                  : 'Draft — needs approval'}
+                              </span>
+                              {req.follow_up_sent_at && (
+                                <span className="text-xs text-slate-500">Sent {formatDate(req.follow_up_sent_at)}</span>
+                              )}
+                            </div>
+                            <pre className="text-xs text-slate-300 whitespace-pre-wrap font-sans leading-relaxed">
+                              {req.follow_up_draft}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+
                       {/* Actions */}
                       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mt-5 pt-4 border-t border-white/5">
                         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -403,4 +612,24 @@ function timelineLabel(value) {
     exploring: 'Exploring',
   };
   return labels[value] || value;
+}
+
+function formatKey(key) {
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (s) => s.toUpperCase())
+    .replace(/requestedService/g, 'Service')
+    .replace(/clientObjective/g, 'Objective')
+    .replace(/businessType/g, 'Business type')
+    .replace(/existingWebsite/g, 'Existing site')
+    .replace(/desiredOutcome/g, 'Desired outcome')
+    .replace(/requestedDeadline/g, 'Deadline')
+    .replace(/availableBudget/g, 'Budget')
+    .replace(/missingInformation/g, 'Missing info')
+    .replace(/technicalComplexity/g, 'Complexity')
+    .replace(/businessValue/g, 'Value')
+    .replace(/deliveryRisk/g, 'Risk')
+    .replace(/recommendedDiscoveryQuestions/g, 'Discovery questions')
+    .replace(/recommendedNextAction/g, 'Next action')
+    .replace(/qualificationStatus/g, 'Status');
 }
