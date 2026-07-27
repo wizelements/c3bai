@@ -144,12 +144,12 @@ function Nav() {
           <a href="#systems" className="text-slate-400 hover:text-white transition">Systems</a>
           <a href="#projects" className="text-slate-400 hover:text-white transition">Projects</a>
           <Link href="/services" className="text-slate-400 hover:text-white transition">Services</Link>
-          <a
-            href="#inquiry"
-            className="px-4 py-2 bg-white text-[#0a0a0f] rounded-lg hover:bg-cyan-300 transition font-semibold"
+          <Link
+            href="/start-project"
+            className="px-4 py-2 bg-gradient-to-r from-cyan-400 to-purple-500 text-[#0a0a0f] rounded-lg hover:opacity-90 transition font-semibold"
           >
-            Get Started
-          </a>
+            Start Project
+          </Link>
         </div>
       </div>
     </nav>
@@ -181,10 +181,16 @@ function Hero() {
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
           <a
-            href="#inquiry"
-            className="px-8 py-4 bg-gradient-to-r from-cyan-400 to-cyan-500 text-[#0a0a0f] font-bold rounded-xl hover:shadow-[0_0_40px_rgba(34,211,238,0.35)] transition inline-flex items-center justify-center gap-2"
+            href="/start-project"
+            className="px-8 py-4 bg-gradient-to-r from-cyan-400 to-purple-500 text-[#0a0a0f] font-bold rounded-xl hover:shadow-[0_0_40px_rgba(168,85,247,0.35)] transition inline-flex items-center justify-center gap-2 text-lg"
           >
-            Get Your Free Systems Audit <ArrowRight size={20} />
+            Start Your Project <ArrowRight size={20} />
+          </a>
+          <a
+            href="#inquiry"
+            className="px-8 py-4 border border-white/20 text-white font-semibold rounded-xl hover:bg-white/5 transition inline-flex items-center justify-center gap-2"
+          >
+            Get Your Free Systems Audit
           </a>
           <Link
             href="/services"

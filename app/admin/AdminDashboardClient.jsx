@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Zap } from 'lucide-react';
+import { Zap, ExternalLink } from 'lucide-react';
 
 const statusColors = {
   new: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/20',
@@ -73,6 +73,18 @@ export default function AdminDashboardClient({ inquiries }) {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Navigation tabs */}
+        <div className="flex gap-2 mb-6">
+          <div className="px-4 py-2 rounded-lg bg-cyan-400/10 border border-cyan-400/20 text-cyan-300 text-sm font-medium">
+            Inquiries
+          </div>
+          <a
+            href="/admin/requests"
+            className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-slate-200 hover:bg-white/10 text-sm font-medium transition flex items-center gap-1.5"
+          >
+            Project Requests <ExternalLink size={12} />
+          </a>
+        </div>
         <div className="glass-card rounded-2xl p-6 mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
             <div>
