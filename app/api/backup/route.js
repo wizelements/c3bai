@@ -1,4 +1,4 @@
-import { getClient, getProjectRequests, getInquiries, getAuditLogs } from '@/lib/db';
+import { getProjectRequests, getInquiries, getAuditLogs, getClient } from '@/lib/db';
 import { isAdminAuthenticated } from '@/lib/auth';
 
 /**
