@@ -34,12 +34,12 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
-          <a
-            href="#audit"
+          <Link
+            href="/lead-magnet"
             className="px-8 py-4 bg-gradient-to-r from-cyan-400 to-purple-500 text-[#0a0a0f] font-bold rounded-xl hover:shadow-[0_0_40px_rgba(168,85,247,0.35)] transition inline-flex items-center justify-center gap-2 text-lg"
           >
-            Get Your Free Revenue Systems Audit <ArrowRight size={20} />
-          </a>
+            Get the Free AI Playbook <ArrowRight size={20} />
+          </Link>
           <Link
             href="/services"
             className="px-8 py-4 border border-white/20 text-white font-semibold rounded-xl hover:bg-white/5 transition inline-flex items-center justify-center gap-2"

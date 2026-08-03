@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Download, Wrench, RefreshCw, Check, ArrowRight } from 'lucide-react';
 
 const offers = [
@@ -89,8 +90,8 @@ export default function OfferLadder() {
                   ))}
                 </ul>
 
-                <a
-                  href="#audit"
+                <Link
+                  href="/lead-magnet"
                   className="w-full py-3.5 rounded-xl font-semibold inline-flex items-center justify-center gap-2 transition"
                   style={{
                     background: offer.highlighted
@@ -101,7 +102,7 @@ export default function OfferLadder() {
                   }}
                 >
                   {offer.cta} <ArrowRight size={18} />
-                </a>
+                </Link>
               </div>
             );
           })}
