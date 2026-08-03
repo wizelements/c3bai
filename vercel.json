@@ -3,7 +3,6 @@
   "devCommand": "next dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "public": true,
   "env": {
     "NEXT_PUBLIC_APP_NAME": "Cod3Black Agency"
   },
