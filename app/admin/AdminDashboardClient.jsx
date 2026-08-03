@@ -84,6 +84,12 @@ export default function AdminDashboardClient({ inquiries }) {
           >
             Project Requests <ExternalLink size={12} />
           </a>
+          <a
+            href="/admin/leads"
+            className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-slate-200 hover:bg-white/10 text-sm font-medium transition flex items-center gap-1.5"
+          >
+            Leads <ExternalLink size={12} />
+          </a>
         </div>
         <div className="glass-card rounded-2xl p-6 mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">

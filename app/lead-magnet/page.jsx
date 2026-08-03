@@ -61,9 +61,27 @@ export default function LeadMagnetPage() {
     }
   }
 
+  async function trackDownload(format) {
+    try {
+      await fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType: 'conversion',
+          eventName: 'lead_magnet_download',
+          entityType: 'lead',
+          source: 'lead_magnet_page',
+          metadata: { format },
+        }),
+      });
+    } catch (err) {
+      // Non-blocking; event tracking failure should not break download.
+      console.warn('[lead-magnet] Download tracking failed:', err);
+    }
+  }
+
   const pdfUrl = '/downloads/ai-client-acquisition-playbook.pdf';
   const mdUrl = '/downloads/ai-client-acquisition-playbook.md';
-  const txtUrl = '/downloads/ai-client-acquisition-playbook.txt';
   const promptUrl = '/downloads/prompt-pack.md';
 
   return (
@@ -122,6 +140,7 @@ export default function LeadMagnetPage() {
               <a
                 href={pdfUrl}
                 download
+                onClick={() => trackDownload('pdf')}
                 className="px-6 py-3.5 bg-gradient-to-r from-cyan-400 to-purple-500 text-[#0a0a0f] font-bold rounded-xl hover:shadow-[0_0_40px_rgba(168,85,247,0.35)] transition inline-flex items-center justify-center gap-2"
               >
                 <Download size={18} />
@@ -130,6 +149,7 @@ export default function LeadMagnetPage() {
               <a
                 href={mdUrl}
                 download
+                onClick={() => trackDownload('md')}
                 className="px-6 py-3.5 border border-white/20 text-white font-semibold rounded-xl hover:bg-white/5 transition inline-flex items-center justify-center gap-2"
               >
                 <Download size={18} />
@@ -145,6 +165,7 @@ export default function LeadMagnetPage() {
               <a
                 href={promptUrl}
                 download
+                onClick={() => trackDownload('prompt-pack')}
                 className="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 font-medium"
               >
                 <Download size={16} />

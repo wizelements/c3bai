@@ -1,212 +1,177 @@
-import { getProjectRequests, getProjectRequestById, updateProjectRequestFollowUp, markProjectRequestFollowUpSent } from '@/lib/db';
+import { z } from 'zod';
+import { getClient } from '@/lib/db';
+import { env } from '@/lib/env';
+import { Resend } from 'resend';
 
-/**
- * GET /api/follow-up
- * Returns project requests that need follow-up attention.
- *
- * Query params:
- *   - status: 'pending' (has draft, not approved, not sent)
- *             'ready' (approved, not sent)
- *             'sent' (sent)
- *             'all' (default)
- *
- * POST /api/follow-up
- * Body: { requestId, action: 'draft' | 'approve' | 'send' | 'resend' }
- *   - draft: Generate or update a follow-up draft
- *   - approve: Mark draft as approved by owner
- *   - send: Mark follow-up as sent
- *   - resend: Reset sent status to allow re-sending
- */
+const followUpSchema = z.object({
+  leadId: z.string().min(1, 'Lead ID is required.'),
+  email: z.string().email('Valid email is required.'),
+  firstName: z.string().max(100).optional().default(''),
+});
 
-export async function GET(request) {
-  try {
-    const url = new URL(request.url);
-    const status = url.searchParams.get('status') || 'all';
+const sendSchema = z.object({
+  leadId: z.string().min(1, 'Lead ID is required.'),
+  draft: z.string().min(1, 'Draft message is required.'),
+});
 
-    const result = await getProjectRequests();
-    if (!result.success) {
-      return Response.json({ success: false, error: result.error }, { status: 500 });
-    }
+function getResendClient() {
+  if (!env.isResendConfigured()) return null;
+  return new Resend(env.resend.apiKey);
+}
 
-    let filtered = result.data || [];
+function generateFollowUpDraft(firstName, email) {
+  const name = firstName || 'there';
+  return `Subject: Quick question about your AI playbook download
 
-    switch (status) {
-      case 'pending':
-        // Has a draft, not approved, not sent
-        filtered = filtered.filter(
-          (r) => r.follow_up_draft && r.follow_up_approved === 0 && r.follow_up_sent === 0
-        );
-        break;
-      case 'ready':
-        // Approved but not sent
-        filtered = filtered.filter(
-          (r) => r.follow_up_approved === 1 && r.follow_up_sent === 0
-        );
-        break;
-      case 'sent':
-        // Already sent
-        filtered = filtered.filter((r) => r.follow_up_sent === 1);
-        break;
-      case 'needs-review':
-        // New leads that haven't been triaged
-        filtered = filtered.filter(
-          (r) => r.qualification_status === 'NEW' || !r.triage_summary
-        );
-        break;
-      case 'all':
-      default:
-        break;
-    }
+Hi ${name},
 
-    return Response.json({
-      success: true,
-      count: filtered.length,
-      data: filtered.map((r) => ({
-        id: r.id,
-        name: r.name,
-        email: r.email,
-        projectName: r.project_name,
-        status: r.status,
-        qualificationStatus: r.qualification_status,
-        hasDraft: !!r.follow_up_draft,
-        draftApproved: r.follow_up_approved === 1,
-        draftSent: r.follow_up_sent === 1,
-        sentAt: r.follow_up_sent_at,
-        createdAt: r.created_at,
-      })),
-    });
-  } catch (error) {
-    console.error('[api/follow-up] GET error:', error);
-    return Response.json({ success: false, error: error.message }, { status: 500 });
-  }
+You downloaded the AI Client Acquisition Playbook from Cod3Black Agency — thanks for that.
+
+Quick question: which part of the playbook felt most relevant to your business right now?
+
+1. The landing page template?
+2. The follow-up message sequence?
+3. The prompt pack for AI copy?
+
+I ask because the next step for most owners is not "do more marketing" — it's installing one system that captures and follows up with leads automatically.
+
+If you want, I can do a free 10-minute revenue systems audit and show you exactly which system would move the needle first for your business.
+
+No pitch, just a clear map.
+
+Book it here: ${env.appUrl}/#audit
+
+— Cod3Black Agency
+${env.appUrl}`;
 }
 
 export async function POST(request) {
   try {
-    const { requestId, action } = await request.json();
+    const body = await request.json();
+    const parsed = followUpSchema.safeParse(body);
 
-    if (!requestId || !action) {
+    if (!parsed.success) {
+      const errors = parsed.error.flatten().fieldErrors;
+      const firstError = Object.values(errors).flat()[0] || 'Validation failed.';
+      return Response.json({ success: false, error: firstError }, { status: 400 });
+    }
+
+    const { leadId, email, firstName } = parsed.data;
+    const draft = generateFollowUpDraft(firstName, email);
+
+    // Persist draft to Turso if available
+    const db = getClient();
+    if (db) {
+      try {
+        await db.execute({
+          sql: 'UPDATE leads SET follow_up_draft = ?, updated_at = ? WHERE id = ?',
+          args: [draft, new Date().toISOString(), leadId],
+        });
+      } catch (dbError) {
+        console.error('[api/follow-up] Failed to save draft:', dbError);
+      }
+    }
+
+    return Response.json({ success: true, draft });
+  } catch (error) {
+    console.error('[api/follow-up] Error:', error);
+    return Response.json({ success: false, error: 'Failed to generate follow-up.' }, { status: 500 });
+  }
+}
+
+export async function PUT(request) {
+  // Alias for POST to support some clients
+  return POST(request);
+}
+
+export async function PATCH(request) {
+  try {
+    const body = await request.json();
+    const parsed = sendSchema.safeParse(body);
+
+    if (!parsed.success) {
+      const errors = parsed.error.flatten().fieldErrors;
+      const firstError = Object.values(errors).flat()[0] || 'Validation failed.';
+      return Response.json({ success: false, error: firstError }, { status: 400 });
+    }
+
+    const { leadId, draft } = parsed.data;
+
+    const db = getClient();
+    if (!db) {
       return Response.json(
-        { success: false, error: 'requestId and action are required' },
-        { status: 400 }
+        { success: false, error: 'Database not configured. Cannot send follow-up.' },
+        { status: 500 }
       );
     }
 
-    const validActions = ['draft', 'approve', 'send', 'resend'];
-    if (!validActions.includes(action)) {
+    const leadResult = await db.execute({
+      sql: 'SELECT * FROM leads WHERE id = ?',
+      args: [leadId],
+    });
+    const lead = leadResult.rows?.[0];
+
+    if (!lead) {
+      return Response.json({ success: false, error: 'Lead not found.' }, { status: 404 });
+    }
+
+    const client = getResendClient();
+    if (!client) {
       return Response.json(
-        { success: false, error: `Invalid action. Must be one of: ${validActions.join(', ')}` },
-        { status: 400 }
+        { success: false, error: 'Resend not configured. Cannot send follow-up.' },
+        { status: 500 }
       );
     }
 
-    // Fetch the request
-    const result = await getProjectRequestById(requestId);
-    if (!result.success || !result.data) {
+    // Extract subject from draft if present
+    const subjectMatch = draft.match(/^Subject:\s*(.+)$/m);
+    const subject = subjectMatch ? subjectMatch[1].trim() : 'Follow-up from Cod3Black Agency';
+    const html = draft
+      .replace(/^Subject:.*$/m, '')
+      .split('\n')
+      .map((line) => {
+        if (!line.trim()) return '<br />';
+        return `<p style="margin:0 0 12px 0; line-height:1.6;">${escapeHtml(line)}</p>`;
+      })
+      .join('');
+
+    try {
+      const result = await client.emails.send({
+        from: env.resend.fromEmail,
+        to: lead.email,
+        subject,
+        html: `<div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1f2937;">
+          ${html}
+          <p style="font-size: 12px; color: #94a3b8; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+            You received this because you downloaded a resource from our website.
+          </p>
+        </div>`,
+      });
+
+      await db.execute({
+        sql: 'UPDATE leads SET follow_up_sent = 1, follow_up_sent_at = ?, updated_at = ? WHERE id = ?',
+        args: [new Date().toISOString(), new Date().toISOString(), leadId],
+      });
+
+      return Response.json({ success: true, result });
+    } catch (emailError) {
+      console.error('[api/follow-up] Failed to send email:', emailError);
       return Response.json(
-        { success: false, error: 'Project request not found' },
-        { status: 404 }
+        { success: false, error: emailError.message || 'Failed to send follow-up email.' },
+        { status: 500 }
       );
-    }
-
-    const req = result.data;
-
-    switch (action) {
-      case 'draft': {
-        // Generate a follow-up draft based on missing info
-        const missingInfo = [];
-        if (!req.company) missingInfo.push('Business/company name');
-        if (!req.project_type) missingInfo.push('Project type');
-        if (!req.current_website) missingInfo.push('Current website or platform');
-        if (!req.desired_outcome) missingInfo.push('Desired outcome');
-        if (!req.timeline) missingInfo.push('Timeline');
-        if (!req.budget_range) missingInfo.push('Budget range');
-
-        const name = req.name || 'there';
-        const firstName = name.split(' ')[0];
-
-        let draft;
-        if (missingInfo.length > 0) {
-          draft = `Hi ${firstName},\n\nThanks again for reaching out about "${req.project_name || 'your project'}".\n\nTo prepare the best proposal, could you share:\n\n`;
-          missingInfo.forEach((info) => {
-            draft += `- ${info}\n`;
-          });
-          draft += `\nThe more we know upfront, the more accurate our proposal will be.\n\nLooking forward to learning more!\n\n— Cod3Black Agency`;
-        } else {
-          draft = `Hi ${firstName},\n\nThanks for your interest in working with Cod3Black Agency on "${req.project_name || 'your project'}".\n\nWe've reviewed your project details and would love to schedule a quick discovery call to discuss your goals and prepare a proposal.\n\nWhat time works best for you this week?\n\n— Cod3Black Agency`;
-        }
-
-        const saveResult = await updateProjectRequestFollowUp(requestId, draft);
-        if (!saveResult.success) {
-          return Response.json({ success: false, error: 'Failed to save draft' }, { status: 500 });
-        }
-
-        return Response.json({ success: true, action: 'draft_created', draft });
-      }
-
-      case 'approve': {
-        if (!req.follow_up_draft) {
-          return Response.json(
-            { success: false, error: 'No draft to approve. Create a draft first.' },
-            { status: 400 }
-          );
-        }
-
-        // Import and use the approve function
-        const { approveProjectRequestFollowUp } = await import('@/lib/db');
-        const approveResult = await approveProjectRequestFollowUp(requestId);
-        if (!approveResult.success) {
-          return Response.json({ success: false, error: 'Failed to approve draft' }, { status: 500 });
-        }
-
-        return Response.json({
-          success: true,
-          action: 'approved',
-          message: 'Follow-up draft approved. Ready to send.',
-          draft: req.follow_up_draft,
-        });
-      }
-
-      case 'send': {
-        if (req.follow_up_approved !== 1) {
-          return Response.json(
-            { success: false, error: 'Draft must be approved before sending.' },
-            { status: 400 }
-          );
-        }
-
-        const sendResult = await markProjectRequestFollowUpSent(requestId);
-        if (!sendResult.success) {
-          return Response.json({ success: false, error: 'Failed to mark as sent' }, { status: 500 });
-        }
-
-        return Response.json({
-          success: true,
-          action: 'sent',
-          message: 'Follow-up marked as sent.',
-        });
-      }
-
-      case 'resend': {
-        // Reset sent status so it can be re-sent
-        const { updateProjectRequestFollowUp } = await import('@/lib/db');
-        const resetResult = await updateProjectRequestFollowUp(requestId, req.follow_up_draft || '');
-        if (!resetResult.success) {
-          return Response.json({ success: false, error: 'Failed to reset follow-up' }, { status: 500 });
-        }
-
-        return Response.json({
-          success: true,
-          action: 'reset',
-          message: 'Follow-up reset. Re-approve and send when ready.',
-        });
-      }
-
-      default:
-        return Response.json({ success: false, error: 'Unknown action' }, { status: 400 });
     }
   } catch (error) {
-    console.error('[api/follow-up] POST error:', error);
-    return Response.json({ success: false, error: error.message }, { status: 500 });
+    console.error('[api/follow-up/send] Error:', error);
+    return Response.json({ success: false, error: 'Failed to send follow-up.' }, { status: 500 });
   }
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }

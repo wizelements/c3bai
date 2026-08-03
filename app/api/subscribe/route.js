@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { getClient } from '@/lib/db';
+import { insertLead } from '@/lib/db';
 import { env } from '@/lib/env';
+import { trackEvent } from '@/lib/tracking';
 import { Resend } from 'resend';
 
 const subscribeSchema = z.object({
@@ -8,63 +9,9 @@ const subscribeSchema = z.object({
   firstName: z.string().max(100, 'First name is too long.').optional().default(''),
 });
 
-function generateId(prefix) {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-}
-
 function getResendClient() {
   if (!env.isResendConfigured()) return null;
   return new Resend(env.resend.apiKey);
-}
-
-async function ensureLeadsTable(db) {
-  try {
-    await db.executeMultiple(`
-      CREATE TABLE IF NOT EXISTS leads (
-        id TEXT PRIMARY KEY,
-        email TEXT NOT NULL,
-        first_name TEXT,
-        source TEXT NOT NULL DEFAULT 'lead_magnet',
-        source_url TEXT,
-        status TEXT NOT NULL DEFAULT 'subscribed',
-        downloaded INTEGER NOT NULL DEFAULT 0,
-        created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
-      );
-
-      CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
-      CREATE INDEX IF NOT EXISTS idx_leads_source ON leads(source);
-      CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at);
-    `);
-    return { success: true };
-  } catch (error) {
-    console.error('[api/subscribe] Failed to ensure leads table:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-async function insertLead(db, email, firstName, sourceUrl) {
-  const ensureResult = await ensureLeadsTable(db);
-  if (!ensureResult.success) {
-    return { success: false, error: ensureResult.error };
-  }
-
-  const id = generateId('lead');
-  const now = new Date().toISOString();
-
-  try {
-    await db.execute({
-      sql: `
-        INSERT INTO leads (id, email, first_name, source, source_url, status, downloaded, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      args: [id, email, firstName || '', 'lead_magnet', sourceUrl || '', 'subscribed', 0, now, now],
-    });
-    return { success: true, id };
-  } catch (error) {
-    console.error('[api/subscribe] Failed to insert lead:', error);
-    return { success: false, error: error.message };
-  }
 }
 
 async function sendWelcomeEmail(email, firstName) {
@@ -74,7 +21,7 @@ async function sendWelcomeEmail(email, firstName) {
     return { success: false, reason: 'not_configured' };
   }
 
-  const appUrl = env.appUrl || 'https://c3bai-nu.vercel.app';
+  const appUrl = env.appUrl;
   const playbookUrl = `${appUrl}/downloads/ai-client-acquisition-playbook.pdf`;
   const promptUrl = `${appUrl}/downloads/prompt-pack.md`;
   const mdUrl = `${appUrl}/downloads/ai-client-acquisition-playbook.md`;
@@ -156,14 +103,8 @@ export async function POST(request) {
     const { email, firstName } = parsed.data;
     const sourceUrl = request.headers.get('referer') || '';
 
-    const db = getClient();
-    let dbResult = { success: false, reason: 'not_configured' };
-
-    if (db) {
-      dbResult = await insertLead(db, email, firstName, sourceUrl);
-    } else {
-      console.warn('[api/subscribe] Turso not configured; lead not persisted.');
-    }
+    // Persist lead
+    const dbResult = await insertLead({ email, firstName, source: 'lead_magnet', sourceUrl });
 
     if (!dbResult.success && dbResult.reason !== 'not_configured') {
       console.error('[api/subscribe] Database insert failed:', dbResult.error);
@@ -172,6 +113,17 @@ export async function POST(request) {
         { status: 500 }
       );
     }
+
+    // Track conversion event
+    await trackEvent({
+      eventType: 'conversion',
+      eventName: 'lead_magnet_submit',
+      entityType: 'lead',
+      entityId: dbResult.id || null,
+      source: 'lead_magnet_page',
+      sourceUrl,
+      metadata: { email, firstName, dbSaved: dbResult.success },
+    });
 
     // Send welcome email best-effort; do not roll back the lead if email fails.
     let emailResult = { success: false, reason: 'not_attempted' };
