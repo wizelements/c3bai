@@ -14,3 +14,4 @@ yarn-error.log*
 .env*.local
 local.db
 *.db
+.env*
