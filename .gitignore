@@ -15,3 +15,7 @@ yarn-error.log*
 local.db
 *.db
 .env*
+
+# Local/deployment environment files
+.env.vercel
+.env*.local
