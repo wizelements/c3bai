@@ -3,6 +3,8 @@ import { isAdminAuthenticated } from '@/lib/auth';
 import { getInquiries } from '@/lib/db';
 import AdminDashboardClient from './AdminDashboardClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Admin Dashboard - Cod3Black Agency',
 };
