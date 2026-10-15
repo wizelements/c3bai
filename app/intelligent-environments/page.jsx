@@ -15,6 +15,10 @@ export const metadata = {
   title: 'Intelligent Environment Automation Pilot | Cod3Black',
   description:
     'A qualification-only pilot for governed AI automation across supported Google Home environments, properties, offices, and operational spaces.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 const useCases = [
