@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation';
 import { isAdminAuthenticated } from '@/lib/auth';
-import { getLeads, getEventCounts } from '@/lib/db';
+import { getLeads } from '@/lib/db';
+import { getEventCounts } from '@/lib/tracking';
 import AdminLeadsClient from './AdminLeadsClient';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Leads - Cod3Black Admin',
