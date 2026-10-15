@@ -87,6 +87,20 @@ Do not automate or market unsupported high-risk actions, including:
 
 High-impact actions require explicit approval policy, audit evidence, and platform support.
 
+## Current Google Home MCP constraints
+
+For Google Home MCP specifically, the current upstream service is Early Access. Google documents occasional latency, experimental traits, and no support yet for creating/managing Google Home automations through Home MCP.
+
+Accordingly:
+
+- do not sell guaranteed real-time response;
+- do not promise Home-native automation creation/management;
+- qualify each device/action against the actual authorized Home before quoting implementation;
+- keep the first connection read-only;
+- treat unsupported or inconsistent traits as exclusions, not billable guarantees.
+
+OPEE may orchestrate its own governed schedules/workflows around supported Home MCP reads/actions later, but that is distinct from Google Home-native automation management and must be certified separately.
+
 ## Product architecture
 
 Keep the commercial product runtime-neutral:
